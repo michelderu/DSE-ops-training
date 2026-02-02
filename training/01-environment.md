@@ -1,10 +1,10 @@
 # Module 01 — Environment
 
-Get the DSE 5.1 training cluster running on your machine using **Docker or Podman** with Compose.
+Get the DSE 5.1 training cluster running on your machine using **Docker or Colima** with Compose.
 
 ## Goals
 
-- Install/verify Docker or Podman and Compose
+- Install/verify Docker or Colima and Compose
 - Bring up the DSE cluster (seed + 2 nodes)
 - Confirm the cluster is healthy and accessible
 
@@ -17,14 +17,17 @@ docker --version
 docker compose version   # or: docker-compose --version
 ```
 
-**Podman:**
+**Colima:**
 
 ```bash
-podman --version
-podman compose version   # or: podman-compose --version
+colima --version
+# On Apple Silicon (arm64): use x86_64 VM so DSE image (linux/amd64) runs natively (no platform warning)
+colima start --arch aarch64 --vm-type=vz --vz-rosetta --cpu 8 --memory 16 # Apple Silicon (if Colima already runs arm64: colima stop, then this)
+# colima start --cpu 8 --memory 16 # Run this on an Intel Mac
+docker compose version # Colima uses Docker (or: docker-compose --version)
 ```
 
-Set `CONTAINER_RUNTIME=docker` or `CONTAINER_RUNTIME=podman` in `.env` so the scripts use the correct commands.
+Set `CONTAINER_RUNTIME=docker` or `CONTAINER_RUNTIME=colima` in `.env` so the scripts use the correct commands.
 
 ## Step 1: Clone or Open the Repo
 
@@ -40,7 +43,7 @@ Copy the example env and adjust if needed (runtime, image tags, heap size):
 
 ```bash
 cp .env.example .env
-# Use Podman: set CONTAINER_RUNTIME=podman in .env
+# Use Colima: set CONTAINER_RUNTIME=colima in .env (run: colima start)
 # Edit .env if you need different DSE image or heap
 ```
 
@@ -55,7 +58,7 @@ Defaults use:
 Use the same compose command as your runtime (or run `./scripts/up-cluster.sh`, which will pull as needed):
 
 ```bash
-docker compose pull   # or: podman compose pull
+docker compose pull   # or with Colima: same (Colima provides Docker)
 ```
 
 This may take a few minutes. If a specific tag (e.g. `5.1.25`) is not found on Docker Hub, check [datastax/dse-server tags](https://hub.docker.com/r/datastax/dse-server/tags) and set `DSE_IMAGE` in `.env` to an available 5.1.x tag.
@@ -115,12 +118,12 @@ Or run the same statements inline with `./scripts/cqlsh.sh -e "..."` (see the CQ
 Use the same compose command as your runtime:
 
 ```bash
-docker compose down   # or: podman compose down
+docker compose down   # same with Colima (Colima provides Docker)
 ```
 
 ## Troubleshooting
 
-- **Seed never becomes UN**: Check logs with `docker compose logs dse-seed` or `podman compose logs dse-seed`. Ensure enough memory (e.g. 4 GB).
+- **Seed never becomes UN**: Check logs with `docker compose logs dse-seed`. Ensure enough memory (e.g. 4 GB).
 - **Port 9042 in use**: Change port mappings in `docker-compose.yml` or stop the process using the port.
 - **Nodes not joining**: Ensure `SEEDS` points to the seed service name (`dse-seed`) and wait 2–3 minutes; run `nodetool status` again.
 

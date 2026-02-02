@@ -1,18 +1,18 @@
 # DSE 5.1 Operations Training
 
-A **comprehensive DataStax Enterprise 5.1 training** for operations teams, using a **local Docker or Podman** environment with Compose so you can run everything on your laptop with minimal setup.
+A **comprehensive DataStax Enterprise 5.1 training** for operations teams, using a **local Docker or Colima** environment with Compose so you can run everything on your laptop with minimal setup.
 
 ## What’s Included
 
-- **Docker or Podman** Compose stack: 3-node DSE 5.1 cluster
+- **Docker or Colima** Compose stack: 3-node DSE 5.1 cluster
 - **Training modules** (concepts + hands-on): environment, architecture, lifecycle, monitoring (nodetool), backup/restore, repair, troubleshooting  
 - **Helper scripts**: bring up cluster in order, run `cqlsh` and `nodetool` on the seed (runtime chosen via `CONTAINER_RUNTIME`)  
 
 ## Prerequisites
 
-- **Docker** or **Podman**:
+- **Docker** or **Colima**:
   - **Docker**: Docker Engine + Docker Compose (plugin `docker compose` or standalone `docker-compose`)
-  - **Podman**: Podman + `podman compose` (Podman 4+) or `podman-compose`
+  - **Colima**: Colima (provides Docker-compatible daemon; install with `brew install colima`). On **Apple Silicon (arm64)** start Colima with an x86_64 VM so the DSE image (linux/amd64) runs natively: `colima start --arch x86_64`. On Intel Macs: `colima start`.
 - **4 GB+ RAM** for the host (8 GB recommended for 3-node cluster)
 - A few GB free disk for images and data
 
@@ -24,7 +24,7 @@ cd DSE-ops-training
 
 # 2. (Optional) Copy and edit .env for runtime, image tags, or heap size
 cp .env.example .env
-# Use Podman instead of Docker: set CONTAINER_RUNTIME=podman in .env
+# Use Colima: set CONTAINER_RUNTIME=colima in .env. On Apple Silicon: colima start --arch x86_64
 
 # 3. Start the cluster (seed first, then 2 nodes)
 ./scripts/up-cluster.sh
@@ -67,37 +67,23 @@ All scripts are intended to be run from the **repository root**.
 
 ## Configuration
 
-- **Runtime**: Set `CONTAINER_RUNTIME=docker` or `CONTAINER_RUNTIME=podman` in `.env`. Scripts use this to run `docker compose` / `podman compose` and `docker exec` / `podman exec`.
+- **Runtime**: Set `CONTAINER_RUNTIME=docker` or `CONTAINER_RUNTIME=colima` in `.env`. Scripts use this to run `docker compose` and `docker exec` (Colima provides Docker).
 - **Images**: Set `DSE_IMAGE` in `.env` (see `.env.example`).  
   For DSE 5.1 use a 5.1.x tag from [Docker Hub](https://hub.docker.com/r/datastax/dse-server/tags) (e.g. `datastax/dse-server:5.1.25`).
 - **Cluster**: `CLUSTER_NAME`, `DC` in `.env` (defaults: `DSE-Ops-Training`, `DC1`).
-- **Heap**: `JVM_EXTRA_OPTS` in `.env` (default: `-Xms1g -Xmx1g` for laptops).
+- **Heap**: limited to 1G for use on laptops.
 
 ## Stopping and Cleaning Up
 
 Use the same compose command as your runtime (scripts use `CONTAINER_RUNTIME` from `.env`):
 
 ```bash
-# With Docker
+# With Docker or Colima (Colima uses Docker)
 docker compose down
-
-# With Podman
-podman compose down
-# or: podman-compose down
 
 # Wipe data: remove the data/ directory after stopping
 # rm -rf data/
 ```
-
-## Data persistence
-
-DSE data is stored in the **local directory** `./data/` (bind-mounted into the containers):
-
-- `./data/seed` — seed node
-- `./data/node1` — second node
-- `./data/node2` — third node
-
-Data survives `docker compose down` / `podman compose down`. To wipe data and start fresh, remove the `data/` directory (after stopping the cluster).
 
 ## Production Note
 

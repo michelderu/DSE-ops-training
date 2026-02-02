@@ -19,12 +19,12 @@ Find and fix common issues in a DSE 5.1 cluster using logs, nodetool, and basic 
 
 ### View logs
 
-From repo root, use your compose command (e.g. `docker compose` or `podman compose`):
+From repo root, use your compose command (e.g. `docker compose`):
 
 ```bash
 # Follow system log (run from repo root; replace with your compose command if needed)
 docker compose exec dse-seed tail -f /var/log/cassandra/system.log
-# Or: podman compose exec dse-seed tail -f /var/log/cassandra/system.log
+# Or with Colima: same (docker compose exec ...)
 
 # Last 200 lines
 docker compose logs --tail 200 dse-seed
@@ -68,6 +68,9 @@ Look for **ERROR**, **WARN**, **Exception**, **OutOfMemoryError**, and **Disk fu
 
 - Fix seeds and network; restart the joining node.
 - If bootstrap was partially done and the node is in a bad state, you may need to clear its data and re-bootstrap (see DSE docs for decommission/clear and re-add).
+
+**"Other bootstrapping/leaving/moving nodes detected" (UnsupportedOperationException):**  
+With `cassandra.consistent.rangemovement=true` (default), only one node may bootstrap at a time. If another node is still joining, a new node will refuse to bootstrap with this exception. Our `docker-compose.yml` sets `JVM_EXTRA_OPTS=-Dcassandra.consistent.rangemovement=false` for the lab so multiple nodes can bootstrap. If you still see this (e.g. after removing that setting), bring the cluster down, then bring it up with `./scripts/up-cluster.sh` so nodes start one after another.
 
 ## OutOfMemoryError (OOM)
 
@@ -130,4 +133,4 @@ Look for **ERROR**, **WARN**, **Exception**, **OutOfMemoryError**, and **Disk fu
 
 ## End of Training
 
-You’ve completed the DSE 5.1 Operations Training. Use the [README](../README.md) and the scripts in `scripts/` to keep practicing in the Docker or Podman environment. For production, follow DataStax recommendations: one node per host, proper sizing, backup/repair schedules, and monitoring (e.g. nodetool, JMX, logs).
+You’ve completed the DSE 5.1 Operations Training. Use the [README](../README.md) and the scripts in `scripts/` to keep practicing in the Docker or Colima environment. For production, follow DataStax recommendations: one node per host, proper sizing, backup/repair schedules, and monitoring (e.g. nodetool, JMX, logs).

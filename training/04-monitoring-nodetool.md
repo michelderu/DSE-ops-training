@@ -1,6 +1,6 @@
 # Module 04 — Monitoring & nodetool
 
-Use **nodetool** (and JMX/logs) to monitor cluster health and performance. All commands are run in the Docker or Podman environment from the repo root.
+Use **nodetool** (and JMX/logs) to monitor cluster health and performance. All commands are run in the Docker or Colima environment from the repo root.
 
 ## Goals
 
@@ -208,7 +208,7 @@ Monitoring also includes **logs**. From repo root, use your compose command:
 
 ```bash
 docker compose exec dse-seed tail -f /var/log/cassandra/system.log
-# Or: podman compose exec dse-seed tail -f /var/log/cassandra/system.log
+# Or with Colima: same (docker compose exec ...)
 ```
 
 **What to look for (performance and stability):**

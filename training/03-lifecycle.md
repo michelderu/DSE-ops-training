@@ -29,7 +29,7 @@ docker compose up -d dse-seed
 # When you see UN for the seed, continue.
 
 # 3. Add 2 more nodes
-docker compose up -d dse-node-1 dse-node-2
+docker compose up -d dse-node-1
 ```
 
 ## Stopping the Cluster
@@ -76,7 +76,7 @@ All nodes should show **UN** when the cluster is healthy.
 
 ### Container status
 
-From repo root, run your compose command (e.g. `docker compose ps` or `podman compose ps`) to see running containers (dse-seed, dse-node-1, dse-node-2).
+From repo root, run your compose command (e.g. `docker compose ps`) to see running containers (dse-seed, dse-node-1, dse-node-2).
 
 ## Running nodetool on a Specific Node
 
@@ -124,7 +124,7 @@ docker compose restart dse-seed
 
 ```bash
 docker compose restart dse-node-1
-# Or: podman compose restart dse-node-1
+# Or with Colima: same (docker compose restart ...)
 ```
 
 After a restart, run `nodetool status` until the node is UN again.

@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
-# Set COMPOSE_CMD for docker compose / podman compose. Source from other scripts.
-# Uses CONTAINER_RUNTIME from environment or .env (docker | podman). Default: docker.
+# Set COMPOSE_CMD for docker compose. Source from other scripts.
+# Uses CONTAINER_RUNTIME from environment or .env (docker | colima). Default: docker.
+# Colima provides a Docker-compatible daemon; set CONTAINER_RUNTIME=colima to require Colima and use docker compose.
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
@@ -13,18 +14,24 @@ fi
 CONTAINER_RUNTIME="${CONTAINER_RUNTIME:-docker}"
 
 case "$CONTAINER_RUNTIME" in
-  podman)
-    if command -v podman >/dev/null 2>&1 && podman compose version >/dev/null 2>&1; then
-      COMPOSE_CMD="podman compose"
-    elif command -v podman-compose >/dev/null 2>&1; then
-      COMPOSE_CMD="podman-compose"
-    else
-      echo "CONTAINER_RUNTIME=podman but neither 'podman compose' nor 'podman-compose' found." >&2
+  colima)
+    if ! command -v colima >/dev/null 2>&1; then
+      echo "CONTAINER_RUNTIME=colima but 'colima' not found. Install with: brew install colima" >&2
       exit 1
     fi
-    CONTAINER_EXEC="podman exec"
-    # Suppress "Executing external compose provider" message (see podman-compose(1))
-    export PODMAN_COMPOSE_WARNING_LOGS=false
+    if ! colima status 2>&1 | grep -q "colima is running"; then
+      echo "CONTAINER_RUNTIME=colima but Colima is not running. Start with: colima start" >&2
+      exit 1
+    fi
+    if command -v docker >/dev/null 2>&1 && docker compose version >/dev/null 2>&1; then
+      COMPOSE_CMD="docker compose"
+    elif command -v docker-compose >/dev/null 2>&1; then
+      COMPOSE_CMD="docker-compose"
+    else
+      echo "CONTAINER_RUNTIME=colima but neither 'docker compose' nor 'docker-compose' found." >&2
+      exit 1
+    fi
+    CONTAINER_EXEC="docker exec"
     ;;
   docker)
     if command -v docker >/dev/null 2>&1 && docker compose version >/dev/null 2>&1; then
@@ -38,7 +45,7 @@ case "$CONTAINER_RUNTIME" in
     CONTAINER_EXEC="docker exec"
     ;;
   *)
-    echo "CONTAINER_RUNTIME must be 'docker' or 'podman', got: $CONTAINER_RUNTIME" >&2
+    echo "CONTAINER_RUNTIME must be 'docker' or 'colima', got: $CONTAINER_RUNTIME" >&2
     exit 1
     ;;
 esac

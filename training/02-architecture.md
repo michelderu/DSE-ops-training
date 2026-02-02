@@ -86,11 +86,11 @@ Check the current session CL with `CONSISTENCY;` (no argument).
 ## Components in DSE 5.1
 
 - **Cassandra core**: CQL, storage engine, compaction, repair (what we use in this training).
-- **DSE Search** (Solr): Full-text search — optional (`-s`).
-- **DSE Analytics** (Spark): Batch/streaming — optional (`-k`).
-- **DSE Graph**: Graph model and Gremlin — optional (`-g`).
+- **DSE Search** (Solr): Full-text search — optional.
+- **DSE Analytics** (Spark): Batch/streaming — optional.
+- **DSE Graph**: Graph model and Gremlin — optional.
 
-Our Docker Compose image runs the **database (transactional)** profile by default (no `-s`, `-k`, or `-g`). That is sufficient for backup, repair, and nodetool operations.
+Our Docker Compose image runs the **database (transactional)** profile only.
 
 ## Ports (Reference)
 
@@ -103,7 +103,7 @@ Our Docker Compose image runs the **database (transactional)** profile by defaul
 
 ## Relating This to Your Lab
 
-- **Cluster**: `DSE-Ops-Training` (from `CLUSTER_NAME` in Compose).
+- **Cluster**: `DSE` (from `CLUSTER_NAME` in Compose).
 - **DC**: `DC1` (from `DC` in Compose).
 - **Nodes**: `dse-seed` + 2 scaled `node` containers; all in `DC1`, `Rack1`.
 - **Seeds**: Only `dse-seed`. Other nodes join via `SEEDS=dse-seed`.

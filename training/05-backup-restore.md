@@ -40,8 +40,7 @@ Snapshot files live inside the container under `/var/lib/cassandra/data/.../snap
 
 ```bash
 docker compose exec dse-seed find /var/lib/cassandra -type d -name "snapshots" 2>/dev/null
-# Or: podman compose exec dse-seed find ...
-# Then use docker cp / podman cp to copy out, or a volume backup strategy
+# Or with Colima: same (docker compose exec ...). Use docker cp to copy out, or a volume backup strategy.
 ```
 
 ### Snapshot all keyspaces

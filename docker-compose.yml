@@ -13,9 +13,10 @@ services:
       CLUSTER_NAME: "${CLUSTER_NAME:-DSE}"
       DC: "${DC:-DC1}"
       RACK: Rack1
-      HEAP_NEWSIZE: 500M
-      MAX_HEAP_SIZE: 1500M
+      HEAP_NEWSIZE: 512M
+      MAX_HEAP_SIZE: 1G
       SNITCH: GossipingPropertyFileSnitch
+      # Allow multiple nodes to bootstrap at once (lab only; avoid UnsupportedOperationException)
     cap_add:
       - IPC_LOCK
     ulimits:
@@ -26,7 +27,7 @@ services:
       - "9160:9160"   # Thrift
       - "7199:7199"   # JMX
     healthcheck:
-      test: ["CMD-SHELL", "nodetool status 2>/dev/null | grep -q UN || exit 1"]
+      test: ["CMD-SHELL", "grep -q 'DSE startup complete' /var/log/cassandra/system.log || exit 1"]
       interval: 15s
       timeout: 10s
       retries: 30
@@ -44,8 +45,8 @@ services:
       SEEDS: dse-seed
       DC: "${DC:-DC1}"
       RACK: Rack1
-      HEAP_NEWSIZE: 500M
-      MAX_HEAP_SIZE: 1500M
+      HEAP_NEWSIZE: 512M
+      MAX_HEAP_SIZE: 1G
       SNITCH: GossipingPropertyFileSnitch
     cap_add:
       - IPC_LOCK
@@ -56,7 +57,7 @@ services:
       dse-seed:
         condition: service_healthy
     healthcheck:
-      test: ["CMD-SHELL", "nodetool status 2>/dev/null | grep -q UN || exit 1"]
+      test: ["CMD-SHELL", "grep -q 'DSE startup complete' /var/log/cassandra/system.log || exit 1"]
       interval: 15s
       timeout: 10s
       retries: 30
@@ -74,8 +75,8 @@ services:
       SEEDS: dse-seed
       DC: "${DC:-DC1}"
       RACK: Rack1
-      HEAP_NEWSIZE: 500M
-      MAX_HEAP_SIZE: 1500M
+      HEAP_NEWSIZE: 512M
+      MAX_HEAP_SIZE: 1G
       SNITCH: GossipingPropertyFileSnitch
     cap_add:
       - IPC_LOCK
