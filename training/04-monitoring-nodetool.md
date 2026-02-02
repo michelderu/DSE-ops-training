@@ -101,8 +101,8 @@ Shows token ranges and which node owns them. The ring is cluster-wide, so the ou
 Per-keyspace/table stats (SSTables, read/write latency, etc.):
 
 ```bash
-./scripts/nodetool.sh tablestats
-./scripts/nodetool.sh tablehistograms training sample
+./scripts/nodetool.sh tablestats training # training being the lab keyspace
+./scripts/nodetool.sh tablehistograms training sample # sample being the lab table
 ```
 
 Use **tablehistograms** for read/write latency and throughput per table (replaces dashboard-style metrics you might otherwise get from a UI).
@@ -208,7 +208,7 @@ Monitoring also includes **logs**. From repo root, use your compose command:
 
 ```bash
 docker compose exec dse-seed tail -f /var/log/cassandra/system.log
-# Or with Colima: same (docker compose exec ...)
+# Or: docker-compose ...
 ```
 
 **What to look for (performance and stability):**

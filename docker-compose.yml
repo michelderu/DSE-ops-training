@@ -32,6 +32,8 @@ services:
       timeout: 10s
       retries: 30
       start_period: 120s
+    volumes:
+      - .:/workspace
     networks:
       dse-net:
 

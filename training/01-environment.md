@@ -108,7 +108,7 @@ exit
 So later modules have something to backup and repair:
 
 ```bash
-./scripts/cqlsh.sh -f ./training/labs/sample-keyspace.cql
+./scripts/cqlsh.sh -f training/labs/sample-keyspace.cql
 ```
 
 Or run the same statements inline with `./scripts/cqlsh.sh -e "..."` (see the CQL file for the full script).
