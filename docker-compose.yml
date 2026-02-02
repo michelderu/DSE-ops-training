@@ -1,0 +1,93 @@
+# DSE 5.1 Operations Training - Docker Compose
+# See README.md and training/ for usage and curriculum.
+# Bootstrap order: dse-seed first, then dse-node-1, dse-node-2 (use scripts/up-cluster.sh).
+# Service, container, and hostname are the same for each node: dse-seed, dse-node-1, dse-node-2.
+
+services:
+  dse-seed:
+    image: "${DSE_IMAGE:-datastax/dse-server:5.1.49-ubi7}"
+    container_name: dse-seed
+    hostname: dse-seed
+    environment:
+      DS_LICENSE: accept
+      CLUSTER_NAME: "${CLUSTER_NAME:-DSE}"
+      DC: "${DC:-DC1}"
+      RACK: Rack1
+      HEAP_NEWSIZE: 500M
+      MAX_HEAP_SIZE: 1500M
+      SNITCH: GossipingPropertyFileSnitch
+    cap_add:
+      - IPC_LOCK
+    ulimits:
+      memlock: -1
+      nofile: 65536
+    ports:
+      - "9042:9042"   # CQL native
+      - "9160:9160"   # Thrift
+      - "7199:7199"   # JMX
+    healthcheck:
+      test: ["CMD-SHELL", "nodetool status 2>/dev/null | grep -q UN || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 30
+      start_period: 120s
+    networks:
+      dse-net:
+
+  dse-node-1:
+    image: "${DSE_IMAGE:-datastax/dse-server:5.1.49-ubi7}"
+    container_name: dse-node-1
+    hostname: dse-node-1
+    environment:
+      DS_LICENSE: accept
+      CLUSTER_NAME: "${CLUSTER_NAME:-DSE}"
+      SEEDS: dse-seed
+      DC: "${DC:-DC1}"
+      RACK: Rack1
+      HEAP_NEWSIZE: 500M
+      MAX_HEAP_SIZE: 1500M
+      SNITCH: GossipingPropertyFileSnitch
+    cap_add:
+      - IPC_LOCK
+    ulimits:
+      memlock: -1
+      nofile: 65536
+    depends_on:
+      dse-seed:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "nodetool status 2>/dev/null | grep -q UN || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 30
+      start_period: 120s
+    networks:
+      dse-net:
+
+  dse-node-2:
+    image: "${DSE_IMAGE:-datastax/dse-server:5.1.49-ubi7}"
+    container_name: dse-node-2
+    hostname: dse-node-2
+    environment:
+      DS_LICENSE: accept
+      CLUSTER_NAME: "${CLUSTER_NAME:-DSE}"
+      SEEDS: dse-seed
+      DC: "${DC:-DC1}"
+      RACK: Rack1
+      HEAP_NEWSIZE: 500M
+      MAX_HEAP_SIZE: 1500M
+      SNITCH: GossipingPropertyFileSnitch
+    cap_add:
+      - IPC_LOCK
+    ulimits:
+      memlock: -1
+      nofile: 65536
+    depends_on:
+      dse-node-1:
+        condition: service_healthy
+    networks:
+      dse-net:
+
+networks:
+  dse-net:
+    driver: bridge
