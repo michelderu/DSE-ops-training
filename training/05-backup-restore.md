@@ -136,7 +136,7 @@ Snapshots are not deleted automatically. Remove a specific tag or all snapshots 
 
 ### Enable incremental backup (cluster-wide)
 
-In `cassandra.yaml`, `incremental_backup: true`. In Docker you’d typically set this via a custom config or env. For the lab you can enable it by running (if your image supports it) or by documenting it:
+In `cassandra.yaml` (at `/opt/dse/resources/cassandra/conf/cassandra.yaml`), set `incremental_backup: true`. In Docker you’d typically set this via a custom config or env. For the lab you can enable it by running (if your image supports it) or by documenting it:
 
 - Default in many DSE 5.1 configs is `false`. When enabled, DSE keeps flushed SSTables that would otherwise be removed by compaction until they are backed up or aged out by your process.
 

@@ -122,9 +122,9 @@ Inside each DSE container (e.g. after `./scripts/shell.sh` or `./scripts/shell.s
 
 | Purpose | Path | Notes |
 |--------|------|--------|
-| **Config** | `/etc/cassandra/cassandra.yaml` | Main Cassandra config (replication, seeds, etc.). |
-| | `/etc/dse/dse.yaml` | DSE-specific config (if present in the image). |
-| | `jvm.options` / JVM config | Often under `/etc/cassandra/` or image default; heap and GC. |
+| **Config** | `/opt/dse/resources/cassandra/conf/cassandra.yaml` | Main Cassandra config (replication, seeds, etc.). |
+| | `/opt/dse/resources/dse/conf/dse.yaml` | DSE-specific config (graph, search, analytics, security, etc.). |
+| | `/opt/dse/resources/cassandra/conf/jvm.options` | JVM options (heap, GC); may be overridden by `JVM_EXTRA_OPTS` in Docker. |
 | **Logs** | `/var/log/cassandra/system.log` | Primary log for startup, errors, and repair. |
 | | `/var/log/cassandra/debug.log` | Verbose debug output. |
 | **Data** | `/var/lib/cassandra/data/` | SSTable data per keyspace/table; snapshots live under `data/<keyspace>/<table>/snapshots/<name>/`. |
