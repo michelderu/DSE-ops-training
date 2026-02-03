@@ -14,7 +14,8 @@ Get the DSE 5.1 training cluster running on your machine using **Docker or Colim
 
 ```bash
 docker --version
-docker compose version   # or: docker-compose --version
+docker-compose --version
+# Or: docker compose version
 ```
 
 **Colima:**
@@ -24,7 +25,8 @@ colima --version
 # On Apple Silicon (arm64): use x86_64 VM so DSE image (linux/amd64) runs natively (no platform warning)
 colima start --arch aarch64 --vm-type=vz --vz-rosetta --cpu 8 --memory 16 # Apple Silicon (if Colima already runs arm64: colima stop, then this)
 # colima start --cpu 8 --memory 16 # Run this on an Intel Mac
-docker compose version # Colima uses Docker (or: docker-compose --version)
+docker-compose --version
+# Or: docker compose version
 ```
 
 Set `CONTAINER_RUNTIME=docker` or `CONTAINER_RUNTIME=colima` in `.env` so the scripts use the correct commands.
@@ -55,10 +57,11 @@ Defaults use:
 
 ## Step 3: Pull Images (First Time)
 
-Use the same compose command as your runtime (or run `./scripts/up-cluster.sh`, which will pull as needed):
+Pull images (or run `./scripts/up-cluster.sh`, which will pull as needed):
 
 ```bash
-docker compose pull   # or with Colima: same (Colima provides Docker)
+docker-compose pull
+# Or: docker compose pull
 ```
 
 This may take a few minutes. If a specific tag (e.g. `5.1.25`) is not found on Docker Hub, check [datastax/dse-server tags](https://hub.docker.com/r/datastax/dse-server/tags) and set `DSE_IMAGE` in `.env` to an available 5.1.x tag.
@@ -113,17 +116,36 @@ So later modules have something to backup and repair:
 
 Or run the same statements inline with `./scripts/cqlsh.sh -e "..."` (see the CQL file for the full script).
 
+## Important paths and files in the container
+
+Inside each DSE container (e.g. after `./scripts/shell.sh` or `./scripts/shell.sh dse-node-1`), these paths matter for operations and troubleshooting. All paths are the same on every node unless noted.
+
+| Purpose | Path | Notes |
+|--------|------|--------|
+| **Config** | `/etc/cassandra/cassandra.yaml` | Main Cassandra config (replication, seeds, etc.). |
+| | `/etc/dse/dse.yaml` | DSE-specific config (if present in the image). |
+| | `jvm.options` / JVM config | Often under `/etc/cassandra/` or image default; heap and GC. |
+| **Logs** | `/var/log/cassandra/system.log` | Primary log for startup, errors, and repair. |
+| | `/var/log/cassandra/debug.log` | Verbose debug output. |
+| **Data** | `/var/lib/cassandra/data/` | SSTable data per keyspace/table; snapshots live under `data/<keyspace>/<table>/snapshots/<name>/`. |
+| | `/var/lib/cassandra/commitlog/` | Commit log (replayed on restart). |
+| | `/var/lib/cassandra/saved_caches/` | Saved row/key caches. |
+| | `/var/lib/cassandra/hints/` | Hinted handoff hints (for down replicas). |
+
+Use these when viewing logs ([04 – Monitoring](04-monitoring-nodetool.md), [07 – Troubleshooting](07-troubleshooting.md)), taking snapshots or restoring ([05 – Backup & Restore](05-backup-restore.md)), or tuning config.
+
 ## Stopping the Environment
 
-Use the same compose command as your runtime:
+Stop the cluster:
 
 ```bash
-docker compose down   # same with Colima (Colima provides Docker)
+docker-compose down
+# Or: docker compose down
 ```
 
 ## Troubleshooting
 
-- **Seed never becomes UN**: Check logs with `docker compose logs dse-seed`. Ensure enough memory (e.g. 4 GB).
+- **Seed never becomes UN**: Check logs with `docker-compose logs dse-seed` (Or: `docker compose logs dse-seed`). Ensure enough memory (e.g. 4 GB).
 - **Port 9042 in use**: Change port mappings in `docker-compose.yml` or stop the process using the port.
 - **Nodes not joining**: Ensure `SEEDS` points to the seed service name (`dse-seed`) and wait 2–3 minutes; run `nodetool status` again.
 

@@ -15,22 +15,28 @@ Find and fix common issues in a DSE 5.1 cluster using logs, nodetool, and basic 
 
 - **System log**: `/var/log/cassandra/system.log` (often the first place to look)
 - **Debug log**: `/var/log/cassandra/debug.log`
+
+For a full list of important paths (config, logs, data) in the lab, see [01 – Environment – Important paths and files in the container](01-environment.md#important-paths-and-files-in-the-container).
 - **GC log**: JVM GC logging (path depends on `JVM_EXTRA_OPTS` / log config)
 
 ### View logs
 
-From repo root, use your compose command (e.g. `docker compose`):
+From repo root:
 
 ```bash
-# Follow system log (run from repo root; replace with your compose command if needed)
-docker compose exec dse-seed tail -f /var/log/cassandra/system.log
-# Or with Colima: same (docker compose exec ...)
+# Follow system log: open a shell in the seed container, then run tail -f
+./scripts/shell.sh
+# Inside the container:
+tail -f /var/log/cassandra/system.log
+# Use ./scripts/shell.sh dse-node-1 or dse-node-2 for other nodes.
 
-# Last 200 lines
-docker compose logs --tail 200 dse-seed
+# Last 200 lines (from host)
+docker-compose logs --tail 200 dse-seed
+# Or: docker compose logs --tail 200 dse-seed
 
 # All logs from all DSE containers
-docker compose logs dse-seed dse-node-1 dse-node-2
+docker-compose logs dse-seed dse-node-1 dse-node-2
+# Or: docker compose logs dse-seed dse-node-1 dse-node-2
 ```
 
 Look for **ERROR**, **WARN**, **Exception**, **OutOfMemoryError**, and **Disk full**.
@@ -42,7 +48,7 @@ Look for **ERROR**, **WARN**, **Exception**, **OutOfMemoryError**, and **Disk fu
 **Checks:**
 
 1. **Is the process running?**  
-   `docker compose ps` — is the container up?
+   `docker-compose ps` (Or: `docker compose ps`) — is the container up?
 2. **Can other nodes reach it?**  
    From another node: `nodetool gossipinfo` and check whether the down node appears and what generation/state it has.
 3. **Network**: Can the host reach the node’s IP/port (e.g. 7000)? In Compose, ensure the `dse-net` network is healthy and no firewall is blocking internode ports.
@@ -50,7 +56,7 @@ Look for **ERROR**, **WARN**, **Exception**, **OutOfMemoryError**, and **Disk fu
 
 **Actions:**
 
-- Restart the node: `docker compose restart <service_or_container>`
+- Restart the node: `docker-compose restart <service_or_container>` (Or: `docker compose restart ...`)
 - If the node is permanently gone (e.g. disk lost), use **nodetool removenode** from another node (see official DSE docs) and then replace the node.
 
 ## Bootstrap / Join Failures
@@ -60,7 +66,7 @@ Look for **ERROR**, **WARN**, **Exception**, **OutOfMemoryError**, and **Disk fu
 **Checks:**
 
 1. **Seeds**: New node must have correct `SEEDS` (e.g. `dse-seed`). In Compose, `SEEDS=dse-seed` in the `node` service.
-2. **Connectivity**: From the joining node container, can it reach the seed on port 7000? (e.g. run your compose exec on the joining container: `docker compose exec <joining_container> bash -c 'nc -zv dse-seed 7000'` or use ping/telnet; get container name from `docker compose ps`.)
+2. **Connectivity**: From the joining node, can it reach the seed on port 7000? Open a shell on the joining node (e.g. `./scripts/shell.sh dse-node-1`), then run `nc -zv dse-seed 7000` or use ping/telnet.
 3. **Disk**: Bootstrap streams data; ensure the node has enough disk and that `/var/lib/cassandra` is writable.
 4. **Logs**: On the joining node, `system.log` often shows “Unable to bootstrap” or streaming errors.
 
@@ -119,7 +125,7 @@ With `cassandra.consistent.rangemovement=true` (default), only one node may boot
 
 | Issue        | Where to look                    | Typical action                    |
 |-------------|-----------------------------------|-----------------------------------|
-| Node DN     | `docker compose ps`, gossip, logs | Restart container; fix network   |
+| Node DN     | `docker-compose ps` (Or: `docker compose ps`), gossip, logs | Restart container; fix network   |
 | Join fails  | SEEDS, connectivity, disk, logs   | Fix config/network; clear & re-add if needed |
 | OOM         | Heap in nodetool info, logs       | Increase heap; restart            |
 | Disk full   | `df`, snapshots                   | Clear snapshots; add disk         |

@@ -22,14 +22,16 @@ This starts the seed, waits until it is UN, then starts the two extra nodes (3-n
 
 ```bash
 # 1. Seed only
-docker compose up -d dse-seed
+docker-compose up -d dse-seed
+# Or: docker compose up -d dse-seed
 
 # 2. Wait until seed is UN
 ./scripts/nodetool.sh status
 # When you see UN for the seed, continue.
 
 # 3. Add 2 more nodes
-docker compose up -d dse-node-1
+docker-compose up -d dse-node-1
+# Or: docker compose up -d dse-node-1
 ```
 
 ## Stopping the Cluster
@@ -37,7 +39,8 @@ docker compose up -d dse-node-1
 **Stop all services (containers):**
 
 ```bash
-docker compose down
+docker-compose down
+# Or: docker compose down
 ```
 
 Data in `./data/` (seed, node1, node2) is preserved. To wipe data, remove the `data/` directory after stopping the cluster.
@@ -45,7 +48,8 @@ Data in `./data/` (seed, node1, node2) is preserved. To wipe data, remove the `d
 **Stop only DSE nodes** (e.g. keep other containers if you had any):
 
 ```bash
-docker compose stop dse-node-1 dse-node-2 dse-seed
+docker-compose stop dse-node-1 dse-node-2 dse-seed
+# Or: docker compose stop ...
 ```
 
 ## Checking Status
@@ -76,7 +80,7 @@ All nodes should show **UN** when the cluster is healthy.
 
 ### Container status
 
-From repo root, run your compose command (e.g. `docker compose ps`) to see running containers (dse-seed, dse-node-1, dse-node-2).
+From repo root: `docker-compose ps` (Or: `docker compose ps`) to see running containers (dse-seed, dse-node-1, dse-node-2).
 
 ## Running nodetool on a Specific Node
 
@@ -97,7 +101,7 @@ From repo root:
 Our Compose file defines a single **node** service that you scale:
 
 - **Current**: dse-seed + dse-node-1 + dse-node-2 = 3 nodes.
-- **Fewer nodes** (e.g. 2 total): stop one node container (e.g. `docker compose stop dse-node-2`) and run `nodetool decommission` or `nodetool removenode` from another node (see DSE docs).
+- **Fewer nodes** (e.g. 2 total): stop one node container (e.g. `docker-compose stop dse-node-2` or `docker compose stop dse-node-2`) and run `nodetool decommission` or `nodetool removenode` from another node (see DSE docs).
 - **More nodes**: add more services (dse-node-3, dse-node-4, …) in `docker-compose.yml` with their own `./data/node3`, etc., and `SEEDS: dse-seed`. Start them after the seed is healthy.
 
 **Important**: In production, run only one DSE node per physical host. In this lab we run multiple nodes on one host for convenience only.
@@ -110,21 +114,22 @@ New nodes must discover the cluster via seeds. In Compose:
 2. Other nodes use `SEEDS=dse-seed` and `depends_on: dse-seed (healthy)`.
 3. The `up-cluster.sh` script enforces this order.
 
-If you start everything with `docker compose up -d` without the script, the seed might not be ready when other nodes start; they can retry, but may log bootstrap errors until the seed is healthy.
+If you start everything with `docker-compose up -d` (or `docker compose up -d`) without the script, the seed might not be ready when other nodes start; they can retry, but may log bootstrap errors until the seed is healthy.
 
 ## Restarting a Single Node
 
 **Seed:**
 
 ```bash
-docker compose restart dse-seed
+docker-compose restart dse-seed
+# Or: docker compose restart dse-seed
 ```
 
 **One of the other nodes (e.g. dse-node-1):**
 
 ```bash
-docker compose restart dse-node-1
-# Or with Colima: same (docker compose restart ...)
+docker-compose restart dse-node-1
+# Or: docker compose restart dse-node-1
 ```
 
 After a restart, run `nodetool status` until the node is UN again.
@@ -134,10 +139,10 @@ After a restart, run `nodetool status` until the node is UN again.
 | Task | Command |
 |------|--------|
 | Start full cluster | `./scripts/up-cluster.sh` |
-| Stop all | `docker compose down` |
+| Stop all | `docker-compose down` (Or: `docker compose down`) |
 | Node status | `./scripts/nodetool.sh status` |
-| Container list | `docker compose ps` |
-| Restart seed | `docker compose restart dse-seed` |
+| Container list | `docker-compose ps` (Or: `docker compose ps`) |
+| Restart seed | `docker-compose restart dse-seed` (Or: `docker compose restart dse-seed`) |
 
 ## Next
 

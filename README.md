@@ -11,7 +11,7 @@ A **comprehensive DataStax Enterprise 5.1 training** for operations teams, using
 ## Prerequisites
 
 - **Docker** or **Colima**:
-  - **Docker**: Docker Engine + Docker Compose (plugin `docker compose` or standalone `docker-compose`)
+  - **Docker**: Docker Engine + Docker Compose (`docker-compose` or plugin `docker compose`)
   - **Colima**: Colima (provides Docker-compatible daemon; install with `brew install colima`). On **Apple Silicon (arm64)** start Colima with an x86_64 VM so the DSE image (linux/amd64) runs natively: `colima start --arch x86_64`. On Intel Macs: `colima start`.
 - **4 GB+ RAM** for the host (8 GB recommended for 3-node cluster)
 - A few GB free disk for images and data
@@ -62,6 +62,7 @@ Start with **[training/00-overview.md](training/00-overview.md)** and follow the
 | `scripts/cqlsh.sh` | Run `cqlsh` on the seed (e.g. `./scripts/cqlsh.sh -e "DESCRIBE KEYSPACES"`) |
 | `scripts/nodetool.sh` | Run `nodetool` on the seed (e.g. `./scripts/nodetool.sh status`) |
 | `scripts/nodetool-node.sh` | Run `nodetool` on a specific node (e.g. `./scripts/nodetool-node.sh dse-seed status`) |
+| `scripts/shell.sh` | Open an interactive shell in a container (e.g. `./scripts/shell.sh` or `./scripts/shell.sh dse-node-1`) |
 
 All scripts are intended to be run from the **repository root**.
 
@@ -75,15 +76,14 @@ All scripts are intended to be run from the **repository root**.
 
 ## Stopping and Cleaning Up
 
-Use the same compose command as your runtime (scripts use `CONTAINER_RUNTIME` from `.env`):
+Stop the cluster:
 
 ```bash
-# With Docker or Colima (Colima uses Docker)
-docker compose down
-
-# Wipe data: remove the data/ directory after stopping
-# rm -rf data/
+docker-compose down
+# Or: docker compose down
 ```
+
+Wipe data: remove the `data/` directory after stopping.
 
 ## Production Note
 

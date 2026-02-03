@@ -16,7 +16,7 @@ By the end of this training you will be able to:
 
 ## Prerequisites
 
-- **Docker** (Engine + Compose: `docker compose` or `docker-compose`) or **Colima** (provides Docker; run `colima start`, then scripts use `docker compose`). Set `CONTAINER_RUNTIME=docker` or `CONTAINER_RUNTIME=colima` in `.env` so the scripts use the right commands.
+- **Docker** (Engine + Compose: `docker-compose` or `docker compose`) or **Colima** (provides Docker; run `colima start`, then scripts use compose). Set `CONTAINER_RUNTIME=docker` or `CONTAINER_RUNTIME=colima` in `.env` so the scripts use the right commands.
 - **4 GB+ RAM** for the host (8 GB recommended for 3-node cluster)
 - **Disk**: a few GB free for images and data
 - Basic familiarity with the command line and YAML
@@ -53,6 +53,6 @@ Each module includes **concepts**, **commands**, and **hands-on steps** you can 
 ## Quick Reference
 
 - **Start cluster**: `./scripts/up-cluster.sh` (from repo root; uses Docker or Colima per `.env`)
-- **Stop all**: `docker compose down` (Docker or Colima)
+- **Stop all**: `docker-compose down` (Or: `docker compose down`) (Docker or Colima)
 - **cqlsh**: `./scripts/cqlsh.sh`
 - **nodetool**: `./scripts/nodetool.sh status`

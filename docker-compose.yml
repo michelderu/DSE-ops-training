@@ -6,6 +6,7 @@
 services:
   dse-seed:
     image: "${DSE_IMAGE:-datastax/dse-server:5.1.49-ubi7}"
+    platform: linux/amd64
     container_name: dse-seed
     hostname: dse-seed
     environment:
@@ -13,12 +14,12 @@ services:
       CLUSTER_NAME: "${CLUSTER_NAME:-DSE}"
       DC: "${DC:-DC1}"
       RACK: Rack1
-      HEAP_NEWSIZE: 512M
-      MAX_HEAP_SIZE: 1G
+      JVM_EXTRA_OPTS: "-Xms1G -Xmx1G -Xmn512M"
       SNITCH: GossipingPropertyFileSnitch
-      # Allow multiple nodes to bootstrap at once (lab only; avoid UnsupportedOperationException)
+    # Allow mlock: DSE locks heap in RAM to avoid swapping; Docker disables this by default.
     cap_add:
       - IPC_LOCK
+    # memlock: unlimited so mlock() can lock heap; nofile: many FDs for connections and SSTables.
     ulimits:
       memlock: -1
       nofile: 65536
@@ -33,12 +34,13 @@ services:
       retries: 30
       start_period: 120s
     volumes:
-      - .:/workspace
+      - .:/workspace # To access the sample-keyspace.cql file from the host machine
     networks:
       dse-net:
 
   dse-node-1:
     image: "${DSE_IMAGE:-datastax/dse-server:5.1.49-ubi7}"
+    platform: linux/amd64
     container_name: dse-node-1
     hostname: dse-node-1
     environment:
@@ -47,11 +49,12 @@ services:
       SEEDS: dse-seed
       DC: "${DC:-DC1}"
       RACK: Rack1
-      HEAP_NEWSIZE: 512M
-      MAX_HEAP_SIZE: 1G
+      JVM_EXTRA_OPTS: "-Xms1G -Xmx1G -Xmn512M"
       SNITCH: GossipingPropertyFileSnitch
+    # Allow mlock: DSE locks heap in RAM to avoid swapping; Docker disables this by default.
     cap_add:
       - IPC_LOCK
+    # memlock: unlimited so mlock() can lock heap; nofile: many FDs for connections and SSTables.
     ulimits:
       memlock: -1
       nofile: 65536
@@ -69,6 +72,7 @@ services:
 
   dse-node-2:
     image: "${DSE_IMAGE:-datastax/dse-server:5.1.49-ubi7}"
+    platform: linux/amd64
     container_name: dse-node-2
     hostname: dse-node-2
     environment:
@@ -77,17 +81,24 @@ services:
       SEEDS: dse-seed
       DC: "${DC:-DC1}"
       RACK: Rack1
-      HEAP_NEWSIZE: 512M
-      MAX_HEAP_SIZE: 1G
+      JVM_EXTRA_OPTS: "-Xms1G -Xmx1G -Xmn512M"
       SNITCH: GossipingPropertyFileSnitch
+    # Allow mlock: DSE locks heap in RAM to avoid swapping; Docker disables this by default.
     cap_add:
       - IPC_LOCK
+    # memlock: unlimited so mlock() can lock heap; nofile: many FDs for connections and SSTables.
     ulimits:
       memlock: -1
       nofile: 65536
     depends_on:
       dse-node-1:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "grep -q 'DSE startup complete' /var/log/cassandra/system.log || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 30
+      start_period: 120s
     networks:
       dse-net:
 

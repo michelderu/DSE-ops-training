@@ -204,12 +204,15 @@ For production, you can expose JMX to external monitoring (e.g. Prometheus via a
 
 ## Logs
 
-Monitoring also includes **logs**. From repo root, use your compose command:
+Monitoring also includes **logs**. From repo root, open a shell in the seed container and follow the system log:
 
 ```bash
-docker compose exec dse-seed tail -f /var/log/cassandra/system.log
-# Or: docker-compose ...
+./scripts/shell.sh
+# Then inside the container:
+tail -f /var/log/cassandra/system.log
 ```
+
+Use `./scripts/shell.sh dse-node-1` or `./scripts/shell.sh dse-node-2` to view logs on another node.
 
 **What to look for (performance and stability):**
 
