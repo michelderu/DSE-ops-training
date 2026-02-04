@@ -5,6 +5,3 @@
 .vscode/
 *.swp
 *.swo
-
-# DSE data (bind-mounted from docker-compose)
-data/

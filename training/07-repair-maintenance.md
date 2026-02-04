@@ -1,19 +1,21 @@
-# Module 06 — Repair & Maintenance
+# Module 07 — Repair & Maintenance
 
 Run **anti-entropy repair** and routine **maintenance** so the cluster stays consistent and disk usage is under control. All commands target the Docker Compose cluster.
 
-## Goals
+## 🎯 Goals
 
-- Understand why repair is needed (replica drift, hints, failures)
-- Run **nodetool repair** with common options (full vs incremental, primary-only, DC-local)
-- Run **nodetool cleanup** after topology changes
-- Relate repair to backup (run cleanup before backup when appropriate)
+- 🔍 Understand why repair is needed (replica drift, hints, failures)
+- 🔧 Run **nodetool repair** with common options (full vs incremental, primary-only, DC-local)
+- 🧹 Run **nodetool cleanup** after topology changes
+- 💾 Relate repair to backup (run cleanup before backup when appropriate)
 
-## Why Repair?
+## 🔧 Why Repair?
 
-- Replicas can diverge due to writes during node outages, hints, or compaction differences.
+> **Replicas can diverge** due to writes during node outages, hints, or compaction differences.
+
 - **Anti-entropy repair** (nodetool repair) compares Merkle trees between replicas and streams missing or differing data so replicas converge.
-- Best practice: run repair regularly (e.g. within the **gc_grace_seconds** window for each table, typically every 10 days or as per policy).
+
+> 💡 **Best practice**: Run repair regularly (e.g. within the **gc_grace_seconds** window for each table, typically every 10 days or as per policy).
 
 ## Repair on the read and write paths (and hinted handoff)
 
@@ -123,7 +125,7 @@ Repair can take a long time on large clusters; run during low-traffic windows wh
 ./scripts/nodetool-node.sh dse-node-2 cleanup
 ```
 
-Run cleanup **before** taking a snapshot when you’ve done topology changes (see [05 – Backup & Restore](05-backup-restore.md)).
+Run cleanup **before** taking a snapshot when you’ve done topology changes (see [06 – Backup & Restore](06-backup-restore.md)).
 
 ## Compaction
 
@@ -142,4 +144,4 @@ Run cleanup **before** taking a snapshot when you’ve done topology changes (se
 
 ## Next
 
-Go to [07 – Troubleshooting](07-troubleshooting.md) for logs, common failures, and recovery steps.
+Go to [08 – Troubleshooting](08-troubleshooting.md) for logs, common failures, and recovery steps.

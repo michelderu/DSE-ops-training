@@ -1,13 +1,13 @@
-# Module 05 — Backup & Restore
+# Module 06 — Backup & Restore
 
 Use DSE 5.1 **snapshots** and **incremental backup** to protect data, and restore when needed. All steps use the Docker Compose cluster.
 
-## Goals
+## 🎯 Goals
 
-- Create and list **snapshots** (full backup)
-- Enable and use **incremental backup**
-- Restore from snapshot (conceptually and with basic steps)
-- Run **cleanup** before backup when appropriate
+- 💾 Create and list **snapshots** (full backup)
+- 🔄 Enable and use **incremental backup**
+- 🔙 Restore from snapshot (conceptually and with basic steps)
+- 🧹 Run **cleanup** before backup when appropriate
 
 ## Core data concepts
 Before diving into backup and restore, let's clarify some core storage concepts in DSE/Cassandra:
@@ -73,7 +73,7 @@ Typical approaches:
 ## Prerequisites in the Lab
 
 - Cluster up (e.g. `./scripts/up-cluster.sh`).
-- Keyspace with data (e.g. `training` from [01 – Environment](01-environment.md)).
+- Keyspace with data (e.g. `training` from [03 – Environment](03-environment.md)).
 
 ## Snapshot (Full Backup)
 
@@ -193,4 +193,4 @@ For the lab, creating and listing snapshots and running cleanup is enough; full 
 
 ## Next
 
-Go to [06 – Repair & Maintenance](06-repair-maintenance.md) for anti-entropy repair and cleanup.
+Go to [07 – Repair & Maintenance](07-repair-maintenance.md) for anti-entropy repair and cleanup.

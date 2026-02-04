@@ -35,6 +35,7 @@ services:
       start_period: 120s
     volumes:
       - .:/workspace # To access the sample-keyspace.cql file from the host machine
+      - ./config:/config # Custom config files (cassandra.yaml, dse.yaml) - DSE startup script swaps these with defaults
     networks:
       dse-net:
 
@@ -67,6 +68,8 @@ services:
       timeout: 10s
       retries: 30
       start_period: 120s
+    volumes:
+      - ./config:/config # Custom config files (cassandra.yaml, dse.yaml) - DSE startup script swaps these with defaults
     networks:
       dse-net:
 
@@ -99,6 +102,8 @@ services:
       timeout: 10s
       retries: 30
       start_period: 120s
+    volumes:
+      - ./config:/config # Custom config files (cassandra.yaml, dse.yaml) - DSE startup script swaps these with defaults
     networks:
       dse-net:
 

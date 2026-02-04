@@ -1,23 +1,24 @@
-# Module 07 — Troubleshooting
+# Module 08 — Troubleshooting
 
 Find and fix common issues in a DSE 5.1 cluster using logs, nodetool, and basic recovery steps. All examples assume the Docker Compose environment.
 
-## Goals
+## 🎯 Goals
 
-- Locate and read DSE logs
-- Interpret **nodetool status** and **gossip**
-- Handle node down, bootstrap failures, and disk/GC issues at a basic level
-- Know where to look in official docs for deeper fixes
+- 📋 Locate and read DSE logs
+- 🔍 Interpret **nodetool status** and **gossip**
+- 🐛 Handle node down, bootstrap failures, and disk/GC issues at a basic level
+- 📚 Know where to look in official docs for deeper fixes
 
-## Logs
+## 📋 Logs
 
-### Where logs live (inside the container)
+### 📁 Where logs live (inside the container)
 
-- **System log**: `/var/log/cassandra/system.log` (often the first place to look)
-- **Debug log**: `/var/log/cassandra/debug.log`
+> **Log locations:**
+> - 📝 **System log**: `/var/log/cassandra/system.log` (often the first place to look)
+> - 🔍 **Debug log**: `/var/log/cassandra/debug.log`
+> - ⚙️ **GC log**: JVM GC logging (path depends on `JVM_EXTRA_OPTS` / log config)
 
-For a full list of important paths (config, logs, data) in the lab, see [01 – Environment – Important paths and files in the container](01-environment.md#important-paths-and-files-in-the-container).
-- **GC log**: JVM GC logging (path depends on `JVM_EXTRA_OPTS` / log config)
+> 💡 For a full list of important paths (config, logs, data) in the lab, see [03 – Environment – Important paths and files in the container](03-environment.md#important-paths-and-files-in-the-container).
 
 ### View logs
 
@@ -99,7 +100,7 @@ With `cassandra.consistent.rangemovement=true` (default), only one node may boot
 **Checks:**
 
 - **Host**: `df -h` on the host (and inside the container if needed). Our data is in the local `./data/` directory (seed, node1, node2).
-- **Snapshots**: Old snapshots consume space. List with `nodetool listsnapshots` and clear with `nodetool clearsnapshot` (see [05 – Backup & Restore](05-backup-restore.md)).
+- **Snapshots**: Old snapshots consume space. List with `nodetool listsnapshots` and clear with `nodetool clearsnapshot` (see [06 – Backup & Restore](06-backup-restore.md)).
 
 **Actions:**
 

@@ -1,4 +1,4 @@
-# Module 02 — DSE 5.1 Architecture
+# Module 02 — Cluster Architecture
 
 Understand how DataStax Enterprise 5.1 is structured so you can operate and troubleshoot it effectively.
 
@@ -52,18 +52,19 @@ In `./training/labs/sample-keyspace.cql`, replication is set when the keyspace i
 
 From the repo root, run `./scripts/cqlsh.sh -e "DESCRIBE KEYSPACE training;"` (or open cqlsh with `./scripts/cqlsh.sh` and run `DESCRIBE KEYSPACE training;`). The output shows the keyspace definition, including the replication map.
 
-## Consistency Levels
+## ⚖️ Consistency Levels
 
 - **Consistency level (CL)** defines how many replicas must respond for a read or write to be considered successful.
-- Common levels:
-  - **ONE**: One replica (fast, less durable).
-  - **QUORUM**: Majority of replicas (e.g. 2 of 3). Good balance of safety and latency.
-  - **ALL**: Every replica. Strongest, slowest.
-  - **LOCAL_ONE** / **LOCAL_QUORUM**: Same but only in the local DC (multi-DC).
 
-For a single-DC cluster with RF=3, **QUORUM** (2 replicas) is a common choice for both reads and writes.
+> **Common levels:**
+> - ⚡ **ONE**: One replica (fast, less durable).
+> - ⚖️ **QUORUM**: Majority of replicas (e.g. 2 of 3). Good balance of safety and latency.
+> - 🔒 **ALL**: Every replica. Strongest, slowest.
+> - 🌐 **LOCAL_ONE** / **LOCAL_QUORUM**: Same but only in the local DC (multi-DC).
 
-**Examples (in cqlsh):** Set the default CL for the session with `CONSISTENCY <level>;`, or use it per statement. From the repo root, run `./scripts/cqlsh.sh`, then:
+> 💡 **For a single-DC cluster with RF=3**: **QUORUM** (2 replicas) is a common choice for both reads and writes.
+
+> 📝 **Examples (in cqlsh)**: Set the default CL for the session with `CONSISTENCY <level>;`, or use it per statement. From the repo root, run `./scripts/cqlsh.sh`, then:
 
 ```cql
 -- Use QUORUM for this session (default for many apps)
@@ -81,18 +82,21 @@ INSERT INTO training.sample (id, name, value, created_at) VALUES (uuid(), 'test'
 SELECT * FROM training.sample LIMIT 1 USING CONSISTENCY ONE;
 ```
 
-Check the current session CL with `CONSISTENCY;` (no argument).
+> 💡 Check the current session CL with `CONSISTENCY;` (no argument).
 
-## Components in DSE 5.1
+## 🧩 Components in DSE 5.1
 
-- **Cassandra core**: CQL, storage engine, compaction, repair (what we use in this training).
-- **DSE Search** (Solr): Full-text search — optional.
-- **DSE Analytics** (Spark): Batch/streaming — optional.
-- **DSE Graph**: Graph model and Gremlin — optional.
+> **Available components:**
+> - ✅ **Cassandra core**: CQL, storage engine, compaction, repair (what we use in this training).
+> - 🔍 **DSE Search** (Solr): Full-text search — optional.
+> - 📊 **DSE Analytics** (Spark): Batch/streaming — optional.
+> - 🕸️ **DSE Graph**: Graph model and Gremlin — optional.
 
-Our Docker Compose image runs the **database (transactional)** profile only.
+> 💡 **Our Docker Compose image** runs the **database (transactional)** profile only.
 
-## Ports (Reference)
+> 📚 **For deeper understanding of Cassandra internals**, see [01 – Database Architecture](01-database-architecture.md) which covers gossip, storage engine, reads/writes, compaction, and repair mechanisms in detail.
+
+## 🔌 Ports (Reference)
 
 | Port | Purpose |
 |------|--------|
@@ -101,14 +105,15 @@ Our Docker Compose image runs the **database (transactional)** profile only.
 | 7000 | Internode (gossip, streaming) |
 | 7199 | JMX (monitoring, nodetool) |
 
-## Relating This to Your Lab
+## 🧪 Relating This to Your Lab
 
-- **Cluster**: `DSE` (from `CLUSTER_NAME` in Compose).
-- **DC**: `DC1` (from `DC` in Compose).
-- **Nodes**: `dse-seed` + 2 scaled `node` containers; all in `DC1`, `Rack1`.
-- **Seeds**: Only `dse-seed`. Other nodes join via `SEEDS=dse-seed`.
-- **Keyspace**: `training` with `NetworkTopologyStrategy` and `'DC1': 3` — every row is replicated to all 3 nodes.
+> **Lab configuration:**
+> - **Cluster**: `DSE` (from `CLUSTER_NAME` in Compose).
+> - **DC**: `DC1` (from `DC` in Compose).
+> - **Nodes**: `dse-seed` + 2 scaled `node` containers; all in `DC1`, `Rack1`.
+> - **Seeds**: Only `dse-seed`. Other nodes join via `SEEDS=dse-seed`.
+> - **Keyspace**: `training` with `NetworkTopologyStrategy` and `'DC1': 3` — every row is replicated to all 3 nodes.
 
-## Next
+## 🚀 Next
 
-Go to [03 – Lifecycle](03-lifecycle.md) to start, stop, and inspect the cluster and scale nodes.
+Go to [03 – Environment](03-environment.md) to set up your Docker or Colima lab environment, then continue to [04 – Lifecycle](04-lifecycle.md) to start, stop, and inspect the cluster and scale nodes.
