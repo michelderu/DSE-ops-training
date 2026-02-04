@@ -6,6 +6,7 @@ Perform advanced cluster operations including node decommissioning, removal, and
 
 - 🚫 Decommission nodes gracefully from the cluster
 - 🗑️ Remove failed nodes from the ring
+- 🔄 Understand node failure and recovery (hinted handoff)
 - 🔑 Understand token assignment and vnodes
 - 📊 Monitor advanced operations
 - ⚠️ Handle edge cases and recovery scenarios
@@ -343,6 +344,196 @@ watch -n 2 './scripts/nodetool.sh status'
    ```
    Node should transition from **UJ** (Up Joining) to **UN** (Up Normal).
 
+### 🔴 Advanced: Node Failure and Recovery (Hinted Handoff)
+
+This exercise demonstrates what happens when a node goes down, receives updates while down, and then rejoins the cluster. You'll see how DSE handles missed writes through hinted handoff.
+
+**Prerequisites:**
+- Cluster is running and healthy
+- Training keyspace exists (run `./scripts/cqlsh.sh -f training/labs/sample-keyspace.cql` if needed)
+
+**Step 1: Baseline - Check current data**
+
+```bash
+# Check all nodes are healthy
+./scripts/nodetool.sh status
+
+# View current data
+./scripts/cqlsh.sh -e "SELECT * FROM training.sample;"
+
+# Note the current row count and data
+```
+
+**Step 2: Stop a node (simulate failure)**
+
+```bash
+# Stop dse-node-2
+docker-compose stop dse-node-2
+
+# Verify it's down
+./scripts/nodetool.sh status
+# dse-node-2 should show as DN (Down Normal)
+
+# Check hints directory on seed (where hints will be stored)
+./scripts/shell.sh
+# Inside container:
+ls -la /var/lib/cassandra/hints/
+exit
+```
+
+**Step 3: Make updates while node is down**
+
+```bash
+# Insert new data while node-2 is down
+./scripts/cqlsh.sh <<'CQL'
+USE training;
+INSERT INTO sample (id, name, value, created_at) 
+VALUES (uuid(), 'written_while_down', 999, toTimestamp(now()));
+INSERT INTO sample (id, name, value, created_at) 
+VALUES (uuid(), 'another_write', 888, toTimestamp(now()));
+SELECT * FROM sample;
+CQL
+
+# Verify data exists on available nodes
+./scripts/cqlsh.sh -e "SELECT * FROM training.sample WHERE name = 'written_while_down' ALLOW FILTERING;"
+```
+
+**Step 4: Check hints (missed writes)**
+
+```bash
+# Check hints directory on seed node (this is the primary way to verify hints)
+./scripts/shell.sh dse-seed
+# Inside container:
+ls -lh /var/lib/cassandra/hints/
+# You should see hint files for dse-node-2
+# Hint files are typically named with timestamps or node identifiers
+exit
+
+💡 **Note**: Hint files are created when writes occur to a down node. The files may not appear immediately, and log messages about hints may be sparse. The presence of hint files in `/var/lib/cassandra/hints/` is the primary indicator that hints are being stored.
+
+**Step 5: Restart the node**
+
+```bash
+# Restart dse-node-2
+docker-compose start dse-node-2
+
+# Monitor it rejoining
+./scripts/nodetool.sh status
+# Should see: DN → UJ (Up Joining) → UN (Up Normal)
+```
+
+**Step 6: Observe hinted handoff**
+
+```bash
+# Once node is UN, hints will be delivered automatically
+# First, check hints directory to see hint files before delivery
+./scripts/shell.sh dse-seed
+# Inside container:
+ls -lh /var/lib/cassandra/hints/
+exit
+
+# Monitor logs for hint delivery activity
+# Check logs before and after hint delivery
+echo "Checking logs for hint delivery messages:"
+./scripts/logs.sh dse-seed --tail 200 | grep -iE "hint|handoff|deliver|replay|mutation.*hint"
+# You should see messages about finished hinted handoffs and deleted hints. Because of the shared-nothing architecture, they may be on dse-node-1 as well.
+
+# Also check system.log directly on the node receiving hints
+./scripts/shell.sh dse-node-2
+# Inside container:
+echo "Checking system.log for hint delivery:"
+tail -200 /var/log/cassandra/system.log | grep -iE "hint|handoff|deliver|replay|mutation"
+exit
+```
+
+Look at the MutationStage line in your output. This is where the magic is happening on the receiving node (dse-node-2).
+
+**What these numbers mean:**
+- In the first snippet, you have: MutationStage | 0 | 0 | x
+- In the second snippet (a few seconds later): MutationStage | 0 | 0 | y
+
+The third column is the Completed Tasks count and it's incrementing. This proves that dse-node-2 is actively processing writes. When dse-seed sends a hint, it arrives at dse-node-2 as a standard mutation and is handled by the MutationStage thread pool.
+
+**Why you don't see "Hint" in these logs**
+The Receiver is "Blind": dse-node-2 doesn't actually know these are "hints." To this node, they are just incoming data packets from another node saying "Please write this to disk."
+
+The Sender is "Aware": Only the node that stored the hint (dse-seed) logs the word "Hint" because it has to manage the hint files, the replay logic, and the deletion of the files after the handoff.
+
+```bash
+# Wait for hints to be delivered (hints are delivered asynchronously)
+
+# Check hints directory again (hint files should be processed/removed after delivery)
+./scripts/shell.sh dse-seed
+# Inside container:
+ls -lh /var/lib/cassandra/hints/
+# Hint files should be gone or significantly reduced after delivery
+exit
+```
+
+**The best way to verify hints were delivered:**
+1. Hint files are gone/reduced (above)
+2. Check logs for delivery activity (above)
+3. Data appears on the recovered node (Step 7)
+
+**Step 7: Verify data consistency**
+
+```bash
+# Check data on the recovered node
+./scripts/shell.sh dse-node-2
+cqlsh <<'CQL'
+CONSISTENCY ONE;
+USE training;
+SELECT * FROM sample WHERE name = 'written_while_down' ALLOW FILTERING;
+SELECT * FROM sample WHERE name = 'another_write' ALLOW FILTERING;
+CQL
+
+# Check from different consistency levels
+cqlsh <<'CQL'
+CONSISTENCY QUORUM;
+USE training;
+SELECT * FROM sample;
+CQL
+
+exit
+```
+
+**Step 8: Run repair to ensure consistency**
+
+```bash
+# Even though hints were delivered, run repair to ensure consistency
+./scripts/nodetool.sh repair training -pr
+
+# Monitor repair progress
+./scripts/nodetool.sh netstats
+```
+
+**Step 9: Verify final state**
+
+```bash
+# Check all nodes have the same data
+./scripts/nodetool.sh status
+# All should be UN
+
+# Verify data consistency
+./scripts/cqlsh.sh -e "SELECT COUNT(*) FROM training.sample;"
+# Should be consistent across nodes
+```
+
+**Key Learning Points:**
+
+- ✅ **Hinted Handoff**: When a node is down, writes are stored as hints on coordinator nodes
+- ✅ **Automatic Recovery**: When node rejoins, hints are automatically delivered
+- ✅ **Eventual Consistency**: Data becomes consistent after hints are delivered
+- ✅ **Repair**: Still recommended after node recovery to ensure full consistency
+- ✅ **Monitoring**: Check hints directory (`/var/lib/cassandra/hints/`) to verify hints exist and are delivered
+- ✅ **Logs**: Hint-related log messages may be sparse; checking the hints directory is more reliable
+
+**Troubleshooting:**
+
+- If hints aren't delivered: Check `max_hint_window_in_ms` in cassandra.yaml (default: 3 hours)
+- If data is missing: Check logs for hint delivery errors
+- If node won't rejoin: Check SEEDS configuration and network connectivity
+
 ### 🔴 Advanced: Complete Decommission Workflow
 
 **⚠️ Warning**: This permanently removes a node. Only do this if you're ready to rebuild.
@@ -504,3 +695,4 @@ Go to [11 – Production Readiness](11-production-readiness.md) for production d
 - [Decommissioning Nodes](https://docs.datastax.com/en/dse/5.1/managing/operations/opsDecommissionNode.html)
 - [Removing Nodes](https://docs.datastax.com/en/dse/5.1/managing/operations/opsRemoveNode.html)
 - [Token Management](https://docs.datastax.com/en/dse/5.1/managing/operations/opsTokens.html)
+- [Hinted Handoff](https://docs.datastax.com/en/dse/5.1/managing/operations/opsHintedHandoff.html)

@@ -10,21 +10,17 @@ The DSE Docker image includes a startup script that automatically swaps configur
 
 ```
 config/
-├── cassandra/
-│   └── conf/
-│       ├── cassandra.yaml    # Override Cassandra configuration
-│       └── jvm.options       # Override JVM options
-└── dse/
-    └── conf/
-        └── dse.yaml          # Override DSE configuration
+├── cassandra.yaml    # Override Cassandra configuratio
+├── jvm.options       # Override JVM options
+└── dse.yaml          # Override DSE configuration
 ```
 
 ## Usage
 
 1. **Copy default configs** (optional): To start with defaults, you can copy them from a running container:
    ```bash
-   docker cp dse-seed:/opt/dse/resources/cassandra/conf/cassandra.yaml config/cassandra/conf/
-   docker cp dse-seed:/opt/dse/resources/dse/conf/dse.yaml config/dse/conf/
+   docker cp dse-seed:/opt/dse/resources/cassandra/conf/cassandra.yaml config/.
+   docker cp dse-seed:/opt/dse/resources/dse/conf/dse.yaml config/.
    ```
 
 2. **Edit the config files** in this directory as needed.
@@ -47,5 +43,5 @@ Then restart the containers.
 ## Notes
 
 - Only include the settings you want to override. The startup script handles merging/replacement.
-- This directory is gitignored, so your custom configurations won't be committed.
 - Changes require a container restart to take effect.
+- Some changes, like enabling vnodes, requires operational steps to implement or you need to start with clean volumes (docker volume rm ...)

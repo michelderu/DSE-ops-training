@@ -74,6 +74,8 @@ Start with **[training/00-overview.md](training/00-overview.md)** and follow the
 
 💡 All scripts are intended to be run from the **repository root**.
 
+⚠️ **Important**: Run scripts directly (e.g., `./scripts/cqlsh.sh`), **do NOT** use backticks around them (e.g., `` `./scripts/cqlsh.sh` ``). Backticks cause the shell to execute the output, which can cause errors.
+
 ## ⚙️ Configuration
 
 - 🐳 **Runtime**: Set `CONTAINER_RUNTIME=docker` or `CONTAINER_RUNTIME=colima` in `.env`. Scripts use this to run `docker compose` and `docker exec` (Colima provides Docker).
