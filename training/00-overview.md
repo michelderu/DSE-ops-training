@@ -35,6 +35,7 @@ By the end of this training you will be able to:
 | [06 – Backup & Restore](06-backup-restore.md) 💾 | Snapshots, incremental backup | Data protection |
 | [07 – Repair & Maintenance](07-repair-maintenance.md) 🔧 | Anti-entropy repair, cleanup | Consistency and disk |
 | [08 – Troubleshooting](08-troubleshooting.md) 🐛 | Logs, common failures, recovery | When things go wrong |
+| [09 – DSE Config](09-dse-config.md) 🔐 | dsetool, configuration encryption | DSE-specific configuration tasks |
 
 **Each module includes** concepts, commands, and hands-on steps you can run in the Docker or Colima environment.
 
@@ -42,7 +43,7 @@ By the end of this training you will be able to:
 
 - **Cluster**: 1 seed node + 2 additional nodes (3 nodes total)
 - **Services**: DSE (CQL 9042 on seed)
-- **Access**: use `./scripts/cqlsh.sh` and `./scripts/nodetool.sh` (they use Docker or Colima based on `CONTAINER_RUNTIME` in `.env`)
+- **Access**: use `./scripts/cqlsh.sh`, `./scripts/nodetool.sh`, and `./scripts/dsetool.sh` (they use Docker or Colima based on `CONTAINER_RUNTIME` in `.env`)
 
 ## 🚀 How to Use This Training
 
@@ -61,3 +62,4 @@ By the end of this training you will be able to:
 - **Stop all**: `docker-compose down` (Or: `docker compose down`) (Docker or Colima)
 - **cqlsh**: `./scripts/cqlsh.sh`
 - **nodetool**: `./scripts/nodetool.sh status`
+- **dsetool**: `./scripts/dsetool.sh status` (DSE-specific tasks)

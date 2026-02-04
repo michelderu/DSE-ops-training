@@ -6,7 +6,7 @@ A **comprehensive DataStax Enterprise 5.1 training** for operations teams, using
 
 - 🐳 **Docker or Colima** Compose stack: 3-node DSE 5.1 cluster
 - 📚 **Training modules** (concepts + hands-on): database architecture, cluster architecture, environment setup, lifecycle, monitoring, backup/restore, repair, troubleshooting  
-- 🛠️ **Helper scripts**: bring up cluster in order, run `cqlsh` and `nodetool` on the seed (runtime chosen via `CONTAINER_RUNTIME`)  
+- 🛠️ **Helper scripts**: bring up cluster in order, run `cqlsh`, `nodetool`, and `dsetool` on the seed (runtime chosen via `CONTAINER_RUNTIME`)  
 
 ## 📋 Prerequisites
 
@@ -52,6 +52,7 @@ Start with **[training/00-overview.md](training/00-overview.md)** and follow the
 | [06 – Backup & Restore](training/06-backup-restore.md) | Snapshots, incremental backup | Data protection |
 | [07 – Repair & Maintenance](training/07-repair-maintenance.md) | Anti-entropy repair, cleanup | Consistency and disk |
 | [08 – Troubleshooting](training/08-troubleshooting.md) | Logs, common failures, recovery | When things go wrong |
+| [09 – DSE Config](training/09-dse-config.md) | dsetool, configuration encryption | DSE-specific configuration tasks |
 
 💡 **Each module includes** concepts, commands, and hands-on steps you can run in the Docker or Colima environment.
 
@@ -63,6 +64,8 @@ Start with **[training/00-overview.md](training/00-overview.md)** and follow the
 | `scripts/cqlsh.sh` | 📝 Run `cqlsh` on the seed (e.g. `./scripts/cqlsh.sh -e "DESCRIBE KEYSPACES"`) |
 | `scripts/nodetool.sh` | 📊 Run `nodetool` on the seed (e.g. `./scripts/nodetool.sh status`) |
 | `scripts/nodetool-node.sh` | 🔧 Run `nodetool` on a specific node (e.g. `./scripts/nodetool-node.sh dse-node-1 status`) |
+| `scripts/dsetool.sh` | 🔐 Run `dsetool` on the seed (e.g. `./scripts/dsetool.sh encryptconfigvalue "password"`) |
+| `scripts/dsetool-node.sh` | 🔐 Run `dsetool` on a specific node (e.g. `./scripts/dsetool-node.sh dse-node-1 status`) |
 | `scripts/shell.sh` | 🐚 Open an interactive shell in a container (e.g. `./scripts/shell.sh` or `./scripts/shell.sh dse-node-1`) |
 
 💡 All scripts are intended to be run from the **repository root**.

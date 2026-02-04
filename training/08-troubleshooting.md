@@ -138,6 +138,6 @@ With `cassandra.consistent.rangemovement=true` (default), only one node may boot
 - [Troubleshooting](https://docs.datastax.com/en/dse/5.1/managing/troubleshooting/)
 - [nodetool](https://docs.datastax.com/en/dse/5.1/managing/tools/nodetool/)
 
-## End of Training
+## 🚀 Next
 
-You’ve completed the DSE 5.1 Operations Training. Use the [README](../README.md) and the scripts in `scripts/` to keep practicing in the Docker or Colima environment. For production, follow DataStax recommendations: one node per host, proper sizing, backup/repair schedules, and monitoring (e.g. nodetool, JMX, logs).
+Go to [09 – DSE Config](09-dse-config.md) for DSE-specific configuration tasks, including configuration encryption with `dsetool`.
