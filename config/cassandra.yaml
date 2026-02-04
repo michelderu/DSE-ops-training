@@ -24,7 +24,8 @@ cluster_name: DSE
 #
 # If you already have a cluster with 1 token per node, and wish to migrate to
 # multiple tokens per node, see http://wiki.apache.org/cassandra/Operations
-# num_tokens: 128
+
+num_tokens: 32 # Just 32 vnodes in this docker setup, instead of 128
 
 # Triggers automatic allocation of num_tokens tokens for this node. The allocation
 # algorithm attempts to choose tokens in a way that optimizes replicated load over
@@ -34,7 +35,8 @@ cluster_name: DSE
 # vnodes.
 #
 # Only supported with the Murmur3Partitioner.
-# allocate_tokens_for_local_replication_factor: 3
+
+allocate_tokens_for_local_replication_factor: 3 # Set to 3 for a RF of 3
 
 # initial_token allows you to specify tokens manually.  While you can use it with
 # vnodes (num_tokens > 1, above) -- in which case you should provide a

@@ -62,7 +62,7 @@ Start with **[training/00-overview.md](training/00-overview.md)** and follow the
 
 | Script | Purpose |
 |--------|--------|
-| `scripts/up-cluster.sh` | 🚀 Start seed, wait for UN, then start 2 nodes (3-node cluster) |
+| `scripts/up-cluster.sh` | 🚀 Start seed, wait for DSE readiness, then start 2 nodes (3-node cluster) |
 | `scripts/cqlsh.sh` | 📝 Run `cqlsh` on the seed (e.g. `./scripts/cqlsh.sh -e "DESCRIBE KEYSPACES"`) |
 | `scripts/nodetool.sh` | 📊 Run `nodetool` on the seed (e.g. `./scripts/nodetool.sh status`) |
 | `scripts/nodetool-node.sh` | 🔧 Run `nodetool` on a specific node (e.g. `./scripts/nodetool-node.sh dse-node-1 status`) |

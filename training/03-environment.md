@@ -137,9 +137,9 @@ Inside each DSE container (e.g. after `./scripts/shell.sh` or `./scripts/shell.s
 The Docker Compose setup includes a volume mapping (`./config:/config`) that allows you to provide custom configuration files. The DSE Docker image's startup script automatically swaps files from `/config` with the default configuration files:
 
 **Configuration locations:**
-- Place `cassandra.yaml` in `./config/cassandra/conf/cassandra.yaml` to override the default Cassandra configuration
-- Place `dse.yaml` in `./config/dse/conf/dse.yaml` to override the default DSE configuration
-- Place `jvm.options` in `./config/cassandra/conf/jvm.options` to override JVM settings
+- Place `cassandra.yaml` in `./config/cassandra.yaml` to override the default Cassandra configuration
+- Place `dse.yaml` in `./config/dse.yaml` to override the default DSE configuration
+- Place `jvm.options` in `./config/jvm.options` to override JVM settings
 
 **Example**: To enable incremental backups, create `config/cassandra/conf/cassandra.yaml` with:
 

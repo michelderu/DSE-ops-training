@@ -35,6 +35,7 @@ services:
       start_period: 120s
     volumes:
       - .:/workspace # To access the sample-keyspace.cql file from the host machine
+      - dse-seed-data:/var/lib/cassandra # Persistent data volume for seed node
       - ./config:/config # Custom config files (cassandra.yaml, dse.yaml) - DSE startup script swaps these with defaults
     networks:
       dse-net:
@@ -70,6 +71,7 @@ services:
       start_period: 120s
     volumes:
       - ./config:/config # Custom config files (cassandra.yaml, dse.yaml) - DSE startup script swaps these with defaults
+      - dse-node-1-data:/var/lib/cassandra # Persistent data volume for node 1
     networks:
       dse-net:
 
@@ -104,9 +106,15 @@ services:
       start_period: 120s
     volumes:
       - ./config:/config # Custom config files (cassandra.yaml, dse.yaml) - DSE startup script swaps these with defaults
+      - dse-node-2-data:/var/lib/cassandra # Persistent data volume for node 2
     networks:
       dse-net:
 
 networks:
   dse-net:
     driver: bridge
+
+volumes:
+  dse-seed-data:
+  dse-node-1-data:
+  dse-node-2-data:
