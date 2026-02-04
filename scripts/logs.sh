@@ -2,7 +2,7 @@
 # View DSE logs easily. Usage: ./scripts/logs.sh [service] [options]
 # Examples:
 #   ./scripts/logs.sh                    # Follow all DSE logs
-#   ./scripts/logs.sh dse-seed          # Follow seed logs
+#   ./scripts/logs.sh dse-seed           # Follow seed logs
 #   ./scripts/logs.sh dse-seed --tail 50 # Last 50 lines of seed logs
 #   ./scripts/logs.sh dse-seed -f        # Follow seed logs (same as default)
 cd "$(dirname "$0")/.."
