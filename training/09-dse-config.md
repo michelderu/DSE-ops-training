@@ -507,11 +507,30 @@ If DSE Graph is enabled, `dsetool` provides commands for graph management:
 
 7. **Limit access**: Restrict access to configuration files, system keys, and keystores to authorized personnel only.
 
-## 🧪 Hands-On Exercise
+## 🧪 Hands-On Exercises
 
-**Note**: This exercise demonstrates configuration encryption. In a production environment, you would apply encrypted values to actual configuration files and enable `config_encryption_active`.
+**Note**: These exercises demonstrate configuration encryption. In a production environment, you would apply encrypted values to actual configuration files and enable `config_encryption_active`.
 
-### Exercise 1: Create a Local System Key
+### 🟢 Beginner: Basic Configuration Encryption
+
+#### Exercise 1: Encrypt a Configuration Value
+
+1. **Encrypt a sample password:**
+```bash
+./scripts/dsetool.sh encryptconfigvalue "examplePassword123"
+```
+
+2. **View the encrypted output** and note the format (base64-encoded string like `+Vj5oHCR/jqfA+OJE2m8zA==`).
+
+3. **Try encrypting different values** to see how the output changes:
+```bash
+./scripts/dsetool.sh encryptconfigvalue "anotherSecret"
+./scripts/dsetool.sh encryptconfigvalue "test123"
+```
+
+### 🟡 Intermediate: System Key Management
+
+#### Exercise 2: Create a Local System Key
 
 1. **Create a system key** on the seed node:
 
@@ -537,24 +556,38 @@ docker cp ./system_key dse-node-1:/etc/dse/conf/system_key
 docker cp ./system_key dse-node-2:/etc/dse/conf/system_key
 ```
 
-### Exercise 2: Encrypt a Configuration Value
-
-1. **Encrypt a sample password:**
+3. **Copy the key to other nodes** (if you have a multi-node cluster):
 
 ```bash
-./scripts/dsetool.sh encryptconfigvalue "examplePassword123"
+# From the host
+docker cp dse-seed:/etc/dse/conf/system_key ./system_key
+docker cp ./system_key dse-node-1:/etc/dse/conf/system_key
+docker cp ./system_key dse-node-2:/etc/dse/conf/system_key
 ```
 
-2. **View the encrypted output** and note the format (base64-encoded string like `+Vj5oHCR/jqfA+OJE2m8zA==`).
-
-3. **Try encrypting different values** to see how the output changes:
-
+4. **Set proper permissions** on each node:
 ```bash
-./scripts/dsetool.sh encryptconfigvalue "anotherSecret"
-./scripts/dsetool.sh encryptconfigvalue "test123"
+./scripts/shell.sh dse-node-1
+# Inside container:
+chmod 700 /etc/dse/conf/system_key
+chown dse:dse /etc/dse/conf/system_key
 ```
 
-### Exercise 3: Explore dsetool Commands
+### 🔴 Advanced: Complete Encryption Workflow
+
+#### Exercise 3: Full Configuration Encryption Setup
+
+1. **Create system key** (if not done): `./scripts/dsetool.sh createsystemkey system_key`
+2. **Encrypt multiple passwords**:
+   ```bash
+   ./scripts/dsetool.sh encryptconfigvalue "keystorePassword123"
+   ./scripts/dsetool.sh encryptconfigvalue "truststorePassword123"
+   ```
+3. **Update configuration files** with encrypted values (create test configs).
+4. **Enable encryption**: Set `config_encryption_active: true` in `dse.yaml`.
+5. **Verify**: Check that DSE starts correctly with encrypted passwords.
+
+#### Exercise 4: Explore dsetool Commands
 
 1. **Check dsetool status:**
 
@@ -600,7 +633,7 @@ Use `nodetool` for:
 
 ## 🚀 Next
 
-You've completed the DSE Operations Training! Review the [README](../README.md) for quick reference commands and continue practicing in your Docker or Colima environment.
+Go to [10 – Advanced Operations](10-advanced-operations.md) for node decommissioning, removal, and token management.
 
 ## 📖 References
 

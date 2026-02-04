@@ -138,6 +138,10 @@ With `cassandra.consistent.rangemovement=true` (default), only one node may boot
 - [Troubleshooting](https://docs.datastax.com/en/dse/5.1/managing/troubleshooting/)
 - [nodetool](https://docs.datastax.com/en/dse/5.1/managing/tools/nodetool/)
 
+## 🧪 Troubleshooting Scenarios
+
+Practice troubleshooting with intentionally broken states. See [Troubleshooting Scenarios](labs/troubleshooting-scenarios.md) for hands-on exercises.
+
 ## 🚀 Next
 
 Go to [09 – DSE Config](09-dse-config.md) for DSE-specific configuration tasks, including configuration encryption with `dsetool`.

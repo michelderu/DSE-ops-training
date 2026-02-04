@@ -53,6 +53,8 @@ Start with **[training/00-overview.md](training/00-overview.md)** and follow the
 | [07 – Repair & Maintenance](training/07-repair-maintenance.md) | Anti-entropy repair, cleanup | Consistency and disk |
 | [08 – Troubleshooting](training/08-troubleshooting.md) | Logs, common failures, recovery | When things go wrong |
 | [09 – DSE Config](training/09-dse-config.md) | dsetool, configuration encryption | DSE-specific configuration tasks |
+| [10 – Advanced Operations](training/10-advanced-operations.md) | Decommission, removenode, tokens | Advanced cluster operations |
+| [11 – Production Readiness](training/11-production-readiness.md) | Production checklist, security, monitoring | Preparing for production |
 
 💡 **Each module includes** concepts, commands, and hands-on steps you can run in the Docker or Colima environment.
 
@@ -66,6 +68,8 @@ Start with **[training/00-overview.md](training/00-overview.md)** and follow the
 | `scripts/nodetool-node.sh` | 🔧 Run `nodetool` on a specific node (e.g. `./scripts/nodetool-node.sh dse-node-1 status`) |
 | `scripts/dsetool.sh` | 🔐 Run `dsetool` on the seed (e.g. `./scripts/dsetool.sh encryptconfigvalue "password"`) |
 | `scripts/dsetool-node.sh` | 🔐 Run `dsetool` on a specific node (e.g. `./scripts/dsetool-node.sh dse-node-1 status`) |
+| `scripts/logs.sh` | 📋 View logs easily (e.g. `./scripts/logs.sh dse-seed` or `./scripts/logs.sh dse-seed --tail 50`) |
+| `scripts/reset-cluster.sh` | 🔄 Reset cluster (stop, remove data, optionally restart) |
 | `scripts/shell.sh` | 🐚 Open an interactive shell in a container (e.g. `./scripts/shell.sh` or `./scripts/shell.sh dse-node-1`) |
 
 💡 All scripts are intended to be run from the **repository root**.

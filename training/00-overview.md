@@ -36,6 +36,8 @@ By the end of this training you will be able to:
 | [07 – Repair & Maintenance](07-repair-maintenance.md) 🔧 | Anti-entropy repair, cleanup | Consistency and disk |
 | [08 – Troubleshooting](08-troubleshooting.md) 🐛 | Logs, common failures, recovery | When things go wrong |
 | [09 – DSE Config](09-dse-config.md) 🔐 | dsetool, configuration encryption | DSE-specific configuration tasks |
+| [10 – Advanced Operations](10-advanced-operations.md) 🚫 | Decommission, removenode, tokens | Advanced cluster operations |
+| [11 – Production Readiness](11-production-readiness.md) 🏭 | Production checklist, security, monitoring | Preparing for production |
 
 **Each module includes** concepts, commands, and hands-on steps you can run in the Docker or Colima environment.
 
@@ -63,3 +65,5 @@ By the end of this training you will be able to:
 - **cqlsh**: `./scripts/cqlsh.sh`
 - **nodetool**: `./scripts/nodetool.sh status`
 - **dsetool**: `./scripts/dsetool.sh status` (DSE-specific tasks)
+- **logs**: `./scripts/logs.sh dse-seed` (view logs)
+- **reset**: `./scripts/reset-cluster.sh` (clean reset)

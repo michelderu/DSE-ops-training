@@ -134,13 +134,35 @@ Run cleanup **before** taking a snapshot when you’ve done topology changes (se
 - Set throughput (MB/s): `nodetool setcompactionthroughput 32`
 - Force user compaction (use with care): `nodetool compact training sample`
 
-## Hands-On Checklist
+## 🧪 Hands-On Exercises
+
+### 🟢 Beginner: Basic Repair
 
 1. Run primary-only repair on the seed:  
    `./scripts/nodetool.sh repair -pr`
-2. Watch `nodetool netstats` (and optionally `compactionstats`) while repair runs.
-3. Run cleanup on all three nodes.
-4. Take a snapshot (see Module 05) and list snapshots.
+2. Watch `nodetool netstats` while repair runs to see streaming activity.
+3. Verify repair completed successfully by checking logs: `./scripts/logs.sh dse-seed --tail 20`
+
+### 🟡 Intermediate: Repair with Monitoring
+
+1. Run primary-only incremental repair: `./scripts/nodetool.sh repair -pr -inc`
+2. In separate terminals, monitor:
+   - `./scripts/nodetool.sh netstats` (streaming)
+   - `./scripts/nodetool.sh compactionstats` (compaction activity)
+3. Check repair progress in logs: `./scripts/logs.sh dse-seed`
+
+### 🔴 Advanced: Full Repair Workflow
+
+1. Run cleanup on all three nodes:
+   ```bash
+   ./scripts/nodetool.sh cleanup
+   ./scripts/nodetool-node.sh dse-node-1 cleanup
+   ./scripts/nodetool-node.sh dse-node-2 cleanup
+   ```
+2. Take a snapshot before repair: `./scripts/nodetool.sh snapshot training -t before_repair`
+3. Run repair with specific keyspace: `./scripts/nodetool.sh repair training -pr`
+4. Monitor repair progress and verify completion.
+5. List snapshots: `./scripts/nodetool.sh listsnapshots`
 
 ## Next
 

@@ -203,7 +203,23 @@ For production, you can expose JMX to external monitoring (e.g. Prometheus via a
 
 ## Logs
 
-Monitoring also includes **logs**. From repo root, open a shell in the seed container and follow the system log:
+Monitoring also includes **logs**. You can view logs in two ways:
+
+**Option 1: Using the logs script (recommended):**
+
+```bash
+# Follow all DSE node logs
+./scripts/logs.sh
+
+# Follow logs for a specific node
+./scripts/logs.sh dse-seed
+./scripts/logs.sh dse-node-1
+
+# View last 50 lines without following
+./scripts/logs.sh dse-seed --tail 50
+```
+
+**Option 2: Inside the container:**
 
 ```bash
 ./scripts/shell.sh
