@@ -13,12 +13,12 @@ Find and fix common issues in a DSE 5.1 cluster using logs, nodetool, and basic 
 
 ### 📁 Where logs live (inside the container)
 
-> **Log locations:**
-> - 📝 **System log**: `/var/log/cassandra/system.log` (often the first place to look)
-> - 🔍 **Debug log**: `/var/log/cassandra/debug.log`
-> - ⚙️ **GC log**: JVM GC logging (path depends on `JVM_EXTRA_OPTS` / log config)
+**Log locations:**
+- 📝 **System log**: `/var/log/cassandra/system.log` (often the first place to look)
+- 🔍 **Debug log**: `/var/log/cassandra/debug.log`
+- ⚙️ **GC log**: JVM GC logging (path depends on `JVM_EXTRA_OPTS` / log config)
 
-> 💡 For a full list of important paths (config, logs, data) in the lab, see [03 – Environment – Important paths and files in the container](03-environment.md#important-paths-and-files-in-the-container).
+💡 For a full list of important paths (config, logs, data) in the lab, see [03 – Environment – Important paths and files in the container](03-environment.md#important-paths-and-files-in-the-container).
 
 ### View logs
 

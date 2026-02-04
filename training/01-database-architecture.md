@@ -2,7 +2,7 @@
 
 Understanding how Cassandra works internally helps you operate, troubleshoot, and tune the cluster effectively. This module covers the core mechanisms that make Cassandra a distributed, highly available database.
 
-> 📚 **Reference**: This module is based on the [DSE 5.1 Database Architecture documentation](https://docs.datastax.com/en/dse/5.1/architecture/database-architecture/database-architecture-contents.html).
+📚 **Reference**: This module is based on the [DSE 5.1 Database Architecture documentation](https://docs.datastax.com/en/dse/5.1/architecture/database-architecture/database-architecture-contents.html).
 
 ## 🎯 Goals
 
@@ -16,21 +16,22 @@ Understanding how Cassandra works internally helps you operate, troubleshoot, an
 
 Cassandra uses a **gossip protocol** for peer-to-peer communication. Each node periodically exchanges state information with a few other nodes (typically 3), propagating updates throughout the cluster.
 
-> **What gossip carries:**
-> - Node status (UP, DOWN, JOINING, LEAVING)
-> - Token ranges (which nodes own which data)
-> - Datacenter and rack information
-> - Load information (for dynamic snitching)
+**What gossip carries:**
+- Node status (UP, DOWN, JOINING, LEAVING)
+- Token ranges (which nodes own which data)
+- Datacenter and rack information
+- Load information (for dynamic snitching)
 
 **Why it matters:**
 - ✅ No single point of failure: nodes discover each other without a central coordinator
 - ⚡ Fast failure detection: nodes learn about failures within seconds
 - 🔄 Automatic topology discovery: new nodes learn the cluster layout from seeds
 
-> 💡 **In your lab**: When `dse-node-1` starts, it contacts `dse-seed` (via `SEEDS=dse-seed`), learns about the cluster through gossip, and joins the ring. You can see gossip information with:
-> ```bash
-> ./scripts/nodetool.sh gossipinfo
-> ```
+💡 **In your lab**: When `dse-node-1` starts, it contacts `dse-seed` (via `SEEDS=dse-seed`), learns about the cluster through gossip, and joins the ring. You can see gossip information with:
+
+```bash
+./scripts/nodetool.sh gossipinfo
+```
 
 ## 📊 Data Distribution: Consistent Hashing
 
@@ -40,12 +41,12 @@ Cassandra uses **consistent hashing** to distribute data across nodes:
 2. **Token → node**: Each node owns a range of tokens. With vnodes, each node owns multiple small ranges.
 3. **Replica placement**: Replicas are placed on subsequent nodes in the ring according to the replication strategy.
 
-> **Example**: With RF=3 and a partition key that hashes to token `100`, replicas are stored on:
-> - The node owning token `100` (primary)
-> - The next node in the ring (replica 1)
-> - The node after that (replica 2)
+**Example**: With RF=3 and a partition key that hashes to token `100`, replicas are stored on:
+- The node owning token `100` (primary)
+- The next node in the ring (replica 1)
+- The node after that (replica 2)
 
-> 💡 The **snitch** (e.g., `GossipingPropertySnitch`) ensures replicas are spread across different racks and datacenters when possible.
+💡 The **snitch** (e.g., `GossipingPropertySnitch`) ensures replicas are spread across different racks and datacenters when possible.
 
 ## 💾 Storage Engine: How Data is Written
 
@@ -55,11 +56,11 @@ When you write data, Cassandra follows this path:
 2. **Writes to memtable** (in-memory structure): Fast writes, sorted by partition key.
 3. **Flushes to SSTable** (on disk): When memtable reaches a threshold (`memtable_flush_writers`), it's written to disk as an immutable SSTable file.
 
-> **SSTables (Sorted String Tables):**
-> - Immutable: once written, never modified
-> - Sorted by partition key for efficient reads
-> - Multiple SSTables per table (one per flush)
-> - Compaction merges SSTables to improve read performance and reclaim space
+**SSTables (Sorted String Tables):**
+- Immutable: once written, never modified
+- Sorted by partition key for efficient reads
+- Multiple SSTables per table (one per flush)
+- Compaction merges SSTables to improve read performance and reclaim space
 
 **File locations:**
 - **Commit log**: `/var/lib/cassandra/commitlog/`
@@ -74,7 +75,7 @@ When you read data, Cassandra follows this path:
 3. **Merges results**: Combines data from memtable and SSTables, using timestamps to determine the latest value.
 4. **Read repair** (optional): If consistency level requires it, checks other replicas and repairs inconsistencies.
 
-> 💡 **Bloom filters**: Each SSTable has a Bloom filter (in memory) that quickly tells Cassandra "this partition definitely isn't here" or "it might be here." This avoids reading SSTables that don't contain the partition.
+💡 **Bloom filters**: Each SSTable has a Bloom filter (in memory) that quickly tells Cassandra "this partition definitely isn't here" or "it might be here." This avoids reading SSTables that don't contain the partition.
 
 **Read performance factors:**
 - 📊 Number of SSTables (fewer = faster, achieved via compaction)
@@ -88,15 +89,16 @@ When you read data, Cassandra follows this path:
 - 💾 Reclaims space from deleted/updated data
 - 🔄 Merges data from the same partition across SSTables
 
-> **Compaction strategies:**
-> - **SizeTieredCompactionStrategy (STCS)**: Merges SSTables of similar size. Simple but can create large temporary space requirements.
-> - **LeveledCompactionStrategy (LCS)**: Organizes SSTables into levels (L0, L1, L2...). More predictable space usage, better for read-heavy workloads.
-> - **TimeWindowCompactionStrategy (TWCS)**: Groups SSTables by time windows. Ideal for time-series data with TTLs.
+**Compaction strategies:**
+- **SizeTieredCompactionStrategy (STCS)**: Merges SSTables of similar size. Simple but can create large temporary space requirements.
+- **LeveledCompactionStrategy (LCS)**: Organizes SSTables into levels (L0, L1, L2...). More predictable space usage, better for read-heavy workloads.
+- **TimeWindowCompactionStrategy (TWCS)**: Groups SSTables by time windows. Ideal for time-series data with TTLs.
 
-> 💡 **In your lab**: Check compaction stats with:
-> ```bash
-> ./scripts/nodetool.sh compactionstats
-> ```
+💡 **In your lab**: Check compaction stats with:
+
+```bash
+./scripts/nodetool.sh compactionstats
+```
 
 ## 🔄 Data Consistency: Repair Mechanisms
 
@@ -109,7 +111,7 @@ If a replica node is down during a write:
 - When the node comes back up, the hint is delivered
 - Hints expire after `max_hint_window_in_ms` (default: 3 hours)
 
-> ⚠️ **Limitation**: Hints are only stored if the coordinator is in the same datacenter as the down node (or if `hinted_handoff_enabled` allows cross-DC hints).
+⚠️ **Limitation**: Hints are only stored if the coordinator is in the same datacenter as the down node (or if `hinted_handoff_enabled` allows cross-DC hints).
 
 ### 2. 🔍 Read Repair (Read Path)
 
@@ -117,7 +119,7 @@ When reading with a consistency level that contacts multiple replicas:
 - If replicas return different values, Cassandra returns the latest (by timestamp) to the client
 - In the background, it updates the stale replicas with the latest value
 
-> ✅ **Automatic**: Happens during normal reads; no separate command needed.
+✅ **Automatic**: Happens during normal reads; no separate command needed.
 
 ### 3. 🔧 Anti-Entropy Repair (Manual)
 
@@ -126,9 +128,9 @@ When reading with a consistency level that contacts multiple replicas:
 - Identifies and repairs inconsistencies
 - Should be run regularly (weekly is common)
 
-> ⚠️ **Why it's needed**: Hints expire, nodes can be down longer than the hint window, or corruption can occur. Anti-entropy repair is the definitive way to ensure consistency.
+⚠️ **Why it's needed**: Hints expire, nodes can be down longer than the hint window, or corruption can occur. Anti-entropy repair is the definitive way to ensure consistency.
 
-> 💡 **In your lab**: See [07 – Repair & Maintenance](07-repair-maintenance.md) for how to run repair.
+💡 **In your lab**: See [07 – Repair & Maintenance](07-repair-maintenance.md) for how to run repair.
 
 ## ⚰️ Tombstones: How Deletes Work
 
@@ -138,46 +140,46 @@ Cassandra doesn't immediately delete data. Instead, it writes a **tombstone** (a
 2. **Reads**: Tombstones are returned like regular data (with a null value)
 3. **Compaction**: Tombstones are removed after `gc_grace_seconds` (default: 10 days) if all replicas have been repaired
 
-> **Why tombstones:**
-> - ✅ Ensures deletes propagate to all replicas
-> - 🔄 Handles the case where a replica was down during the delete
+**Why tombstones:**
+- ✅ Ensures deletes propagate to all replicas
+- 🔄 Handles the case where a replica was down during the delete
 
-> ⚠️ **Tombstone problems:**
-> - Too many tombstones can slow reads and waste space
-> - If `gc_grace_seconds` expires before repair runs, deleted data can "resurrect"
+⚠️ **Tombstone problems:**
+- Too many tombstones can slow reads and waste space
+- If `gc_grace_seconds` expires before repair runs, deleted data can "resurrect"
 
-> 💡 **Best practice**: Run repair more frequently than `gc_grace_seconds` (e.g., weekly repair with 10-day grace period).
+💡 **Best practice**: Run repair more frequently than `gc_grace_seconds` (e.g., weekly repair with 10-day grace period).
 
 ## 📊 Write Patterns and Read Performance
 
-> **Write pattern impact:**
-> - ✅ **Append-only writes** (new partitions): Fast, no read-before-write
-> - ⚡ **Updates** (same partition): Fast writes, but creates multiple versions across SSTables (compaction merges them)
-> - ⚰️ **Deletes**: Create tombstones that must be handled during reads and compaction
+**Write pattern impact:**
+- ✅ **Append-only writes** (new partitions): Fast, no read-before-write
+- ⚡ **Updates** (same partition): Fast writes, but creates multiple versions across SSTables (compaction merges them)
+- ⚰️ **Deletes**: Create tombstones that must be handled during reads and compaction
 
-> **Read pattern impact:**
-> - ⚡ **Partition-level reads** (by partition key): Very fast, single SSTable lookup
-> - 🐌 **Range scans** (multiple partitions): Slower, may touch many SSTables
-> - ⚠️ **Secondary indexes**: Can be slow; consider materialized views or denormalization for production
+**Read pattern impact:**
+- ⚡ **Partition-level reads** (by partition key): Very fast, single SSTable lookup
+- 🐌 **Range scans** (multiple partitions): Slower, may touch many SSTables
+- ⚠️ **Secondary indexes**: Can be slow; consider materialized views or denormalization for production
 
 ## 📝 Summary: Key Takeaways
 
-> **Core concepts:**
-> - 🔗 **Gossip** enables decentralized cluster discovery and failure detection
-> - 📊 **Consistent hashing** distributes data evenly; **vnodes** make rebalancing faster
-> - 💾 **Write path**: Commit log → memtable → SSTable (durable and fast)
-> - 📖 **Read path**: Memtable + multiple SSTables → merge by timestamp
-> - 🔧 **Compaction** keeps reads fast by reducing SSTable count
-> - 🔄 **Repair** (anti-entropy) is essential for long-term consistency
-> - ⚰️ **Tombstones** ensure deletes propagate but require regular repair
+**Core concepts:**
+- 🔗 **Gossip** enables decentralized cluster discovery and failure detection
+- 📊 **Consistent hashing** distributes data evenly; **vnodes** make rebalancing faster
+- 💾 **Write path**: Commit log → memtable → SSTable (durable and fast)
+- 📖 **Read path**: Memtable + multiple SSTables → merge by timestamp
+- 🔧 **Compaction** keeps reads fast by reducing SSTable count
+- 🔄 **Repair** (anti-entropy) is essential for long-term consistency
+- ⚰️ **Tombstones** ensure deletes propagate but require regular repair
 
-> **Operational benefits:**
-> Understanding these mechanisms helps you:
-> - ⚙️ Choose appropriate consistency levels
-> - 📅 Schedule repair operations
-> - 🔧 Tune compaction strategies
-> - 🐛 Troubleshoot performance issues
-> - 📈 Plan for capacity and scaling
+**Operational benefits:**
+Understanding these mechanisms helps you:
+- ⚙️ Choose appropriate consistency levels
+- 📅 Schedule repair operations
+- 🔧 Tune compaction strategies
+- 🐛 Troubleshoot performance issues
+- 📈 Plan for capacity and scaling
 
 ## 🚀 Next
 

@@ -11,11 +11,11 @@ Run **anti-entropy repair** and routine **maintenance** so the cluster stays con
 
 ## 🔧 Why Repair?
 
-> **Replicas can diverge** due to writes during node outages, hints, or compaction differences.
+**Replicas can diverge** due to writes during node outages, hints, or compaction differences.
 
 - **Anti-entropy repair** (nodetool repair) compares Merkle trees between replicas and streams missing or differing data so replicas converge.
 
-> 💡 **Best practice**: Run repair regularly (e.g. within the **gc_grace_seconds** window for each table, typically every 10 days or as per policy).
+💡 **Best practice**: Run repair regularly (e.g. within the **gc_grace_seconds** window for each table, typically every 10 days or as per policy).
 
 ## Repair on the read and write paths (and hinted handoff)
 

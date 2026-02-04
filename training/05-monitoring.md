@@ -16,7 +16,7 @@ From the repo root:
 ./scripts/nodetool.sh <command> [args]
 ```
 
-> 💡 **To run on another node** (e.g. dse-node-1 or dse-node-2):
+💡 **To run on another node** (e.g. dse-node-1 or dse-node-2):
 
 ```bash
 ./scripts/nodetool-node.sh dse-node-1 status
@@ -32,10 +32,10 @@ Shows the ring: state, load, tokens, owns, host ID.
 ./scripts/nodetool.sh status
 ```
 
-> **State indicators:**
-> - ✅ **UN** = Up Normal (healthy).
-> - ❌ **DN** = Down Normal (node stopped or unreachable).
-> - 🔄 **UJ** = Up Joining (new node bootstrapping).
+**State indicators:**
+- ✅ **UN** = Up Normal (healthy).
+- ❌ **DN** = Down Normal (node stopped or unreachable).
+- 🔄 **UJ** = Up Joining (new node bootstrapping).
 
 ### 📊 info
 
@@ -45,19 +45,19 @@ Summary for the **dse-seed** node: uptime, heap, load, cache hit rate, etc.
 ./scripts/nodetool.sh info
 ```
 
-> 💡 **To run on another node** (e.g. **dse-node-1** or **dse-node-2**), use **nodetool-node.sh** with the service name:
+💡 **To run on another node** (e.g. **dse-node-1** or **dse-node-2**), use **nodetool-node.sh** with the service name:
 
 ```bash
 ./scripts/nodetool-node.sh dse-node-1 info
 ./scripts/nodetool-node.sh dse-node-2 info
 ```
 
-> 🔍 **What to look for:**
-> - 💾 **Heap (memory)** — Used vs max heap. If usage is consistently near the max, the JVM will GC heavily and latency can spike. Plan to increase heap or reduce load; avoid using more than ~½ of RAM for heap so the OS has room for page cache.
-> - 📈 **Load** — Total bytes of data on disk for this node (SSTables, etc.). Use it to compare nodes (balance), track growth over time, and size repairs/backups.
-> - ⚡ **Cache hit rate** — Key cache and row cache hit rates (if enabled). Low hit rates mean more disk I/O and higher read latency; consider tuning cache size or access patterns.
-> - ⏱️ **Uptime** — Restarts or short uptime can explain recent slowness or ring changes.
-> - ⚠️ **Overload** — No single metric here; combine high heap usage, low cache hit rate, and high load relative to other nodes as signs the node may be overloaded or unbalanced.
+🔍 **What to look for:**
+- 💾 **Heap (memory)** — Used vs max heap. If usage is consistently near the max, the JVM will GC heavily and latency can spike. Plan to increase heap or reduce load; avoid using more than ~½ of RAM for heap so the OS has room for page cache.
+- 📈 **Load** — Total bytes of data on disk for this node (SSTables, etc.). Use it to compare nodes (balance), track growth over time, and size repairs/backups.
+- ⚡ **Cache hit rate** — Key cache and row cache hit rates (if enabled). Low hit rates mean more disk I/O and higher read latency; consider tuning cache size or access patterns.
+- ⏱️ **Uptime** — Restarts or short uptime can explain recent slowness or ring changes.
+- ⚠️ **Overload** — No single metric here; combine high heap usage, low cache hit rate, and high load relative to other nodes as signs the node may be overloaded or unbalanced.
 
 ### describecluster
 
@@ -89,11 +89,11 @@ Shows token ranges and which node owns them. The ring is cluster-wide, so the ou
 ./scripts/nodetool.sh ring
 ```
 
-> 🔍 **What to look for:**
-> - ✅ **All nodes present** — Every node you expect is in the ring; no missing nodes (connectivity or startup issue) and no unexpected ones (wrong cluster or duplicate).
-> - 📊 **State** — Each node should show **UN** (Up Normal). **DN** (Down Normal) means the node is down or unreachable; **UJ** (Up Joining) is normal only while a node is bootstrapping.
-> - ⚖️ **Token distribution** — With vnodes, each node has many token ranges. Ranges should be spread across nodes without one node owning a much larger share; imbalance can mean hotspots or a bad token assignment.
-> - 🔄 **After topology changes** — After adding a node, it should appear with its tokens and eventually show UN; after decommissioning or removing, that node should no longer appear in the ring.
+🔍 **What to look for:**
+- ✅ **All nodes present** — Every node you expect is in the ring; no missing nodes (connectivity or startup issue) and no unexpected ones (wrong cluster or duplicate).
+- 📊 **State** — Each node should show **UN** (Up Normal). **DN** (Down Normal) means the node is down or unreachable; **UJ** (Up Joining) is normal only while a node is bootstrapping.
+- ⚖️ **Token distribution** — With vnodes, each node has many token ranges. Ranges should be spread across nodes without one node owning a much larger share; imbalance can mean hotspots or a bad token assignment.
+- 🔄 **After topology changes** — After adding a node, it should appear with its tokens and eventually show UN; after decommissioning or removing, that node should no longer appear in the ring.
 
 ### tablestats / tablehistograms
 
@@ -221,7 +221,7 @@ Use `./scripts/shell.sh dse-node-1` or `./scripts/shell.sh dse-node-2` to view l
 - **Exceptions and errors** — OOM (OutOfMemoryError), disk full, or uncaught exceptions indicate stability problems. Address immediately: fix config, add capacity, or fix the failing operation.
 - **Gossip and connectivity** — "Node … is now down" or "Unable to reach …" suggest partition or node failure; use **nodetool status** and **gossipinfo** to confirm ring and gossip state.
 
-> 🐛 See [08 – Troubleshooting](08-troubleshooting.md) for more on logs and common failures.
+🐛 See [08 – Troubleshooting](08-troubleshooting.md) for more on logs and common failures.
 
 ## 🚀 Next
 

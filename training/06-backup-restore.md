@@ -31,9 +31,9 @@ Understanding these concepts is essential because:
 - **Backups** (snapshots, incremental) work at the SSTable (and optionally commit log) level.
 - **Restores** involve copying or replaying these files to return a table, keyspace, or cluster to an earlier state.
 
-> Diagram of the write path:
->
-> `Client Write → Commit Log (disk, durable) + Memtable (memory) → Flush → SSTable (disk, durable)`
+**Diagram of the write path:**
+
+`Client Write → Commit Log (disk, durable) + Memtable (memory) → Flush → SSTable (disk, durable)`
 
 ## Understanding the data lifecycle
 Understanding where data lives helps you reason about backup and restore.

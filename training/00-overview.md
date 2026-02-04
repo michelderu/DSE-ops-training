@@ -16,7 +16,7 @@ By the end of this training you will be able to:
 
 ## 📋 Prerequisites
 
-> **Note**: No prior Cassandra or DSE experience is required; concepts are introduced as needed.
+**Note**: No prior Cassandra or DSE experience is required; concepts are introduced as needed.
 
 - 🐳 **Docker** (Engine + Compose: `docker-compose` or `docker compose`) or **Colima** (provides Docker; run `colima start`, then scripts use compose). Set `CONTAINER_RUNTIME=docker` or `CONTAINER_RUNTIME=colima` in `.env` so the scripts use the right commands.
 - 💻 **4 GB+ RAM** for the host (8 GB recommended for 3-node cluster)
@@ -36,7 +36,7 @@ By the end of this training you will be able to:
 | [07 – Repair & Maintenance](07-repair-maintenance.md) 🔧 | Anti-entropy repair, cleanup | Consistency and disk |
 | [08 – Troubleshooting](08-troubleshooting.md) 🐛 | Logs, common failures, recovery | When things go wrong |
 
-> **Each module includes** concepts, commands, and hands-on steps you can run in the Docker or Colima environment.
+**Each module includes** concepts, commands, and hands-on steps you can run in the Docker or Colima environment.
 
 ## 🧪 Lab Environment Summary
 
@@ -55,7 +55,7 @@ By the end of this training you will be able to:
 
 ## ⚡ Quick Reference
 
-> **Common commands** you'll use throughout the training:
+**Common commands** you'll use throughout the training:
 
 - **Start cluster**: `./scripts/up-cluster.sh` (from repo root; uses Docker or Colima per `.env`)
 - **Stop all**: `docker-compose down` (Or: `docker compose down`) (Docker or Colima)

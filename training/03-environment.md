@@ -10,7 +10,7 @@ Get the DSE 5.1 training cluster running on your machine using **Docker or Colim
 
 ## 📋 Prerequisites Check
 
-> **Docker:**
+**Docker:**
 
 ```bash
 docker --version
@@ -18,7 +18,7 @@ docker-compose --version
 # Or: docker compose version
 ```
 
-> **Colima:**
+**Colima:**
 
 ```bash
 colima --version
@@ -29,7 +29,7 @@ docker-compose --version
 # Or: docker compose version
 ```
 
-> ⚙️ **Configuration**: Set `CONTAINER_RUNTIME=docker` or `CONTAINER_RUNTIME=colima` in `.env` so the scripts use the correct commands.
+⚙️ **Configuration**: Set `CONTAINER_RUNTIME=docker` or `CONTAINER_RUNTIME=colima` in `.env` so the scripts use the correct commands.
 
 ## Step 1: 📁 Clone or Open the Repo
 
@@ -49,10 +49,10 @@ cp .env.example .env
 # Edit .env if you need different DSE image or heap
 ```
 
-> **Defaults use:**
-> - `datastax/dse-server:5.1.49-ubi7` (or the tag in your `.env`)
-> - Cluster name `DSE`, DC `DC1`
-> - JVM heap of 1500M maximum (suitable for laptops)
+**Defaults use:**
+- `datastax/dse-server:5.1.49-ubi7` (or the tag in your `.env`)
+- Cluster name `DSE`, DC `DC1`
+- JVM heap of 1500M maximum (suitable for laptops)
 
 ## Step 3: 📥 Pull Images (First Time)
 
@@ -63,7 +63,7 @@ docker-compose pull
 # Or: docker compose pull
 ```
 
-> ⏱️ **Note**: This may take a few minutes. If a specific tag (e.g. `5.1.25`) is not found on Docker Hub, check [datastax/dse-server tags](https://hub.docker.com/r/datastax/dse-server/tags) and set `DSE_IMAGE` in `.env` to an available 5.1.x tag.
+⏱️ **Note**: This may take a few minutes. If a specific tag (e.g. `5.1.25`) is not found on Docker Hub, check [datastax/dse-server tags](https://hub.docker.com/r/datastax/dse-server/tags) and set `DSE_IMAGE` in `.env` to an available 5.1.x tag.
 
 ## Step 4: 🚀 Start the Cluster
 
@@ -73,30 +73,30 @@ Use the provided script so the seed starts first and becomes healthy before othe
 ./scripts/up-cluster.sh
 ```
 
-> **What it does:**
-> 1. Starts the **seed node** (`dse-seed`).
-> 2. Waits until the seed reports **UN** in `nodetool status`.
-> 3. Starts **2 more nodes** (3-node cluster).
+**What it does:**
+1. Starts the **seed node** (`dse-seed`).
+2. Waits until the seed reports **UN** in `nodetool status`.
+3. Starts **2 more nodes** (3-node cluster).
 
-> ⏱️ **Note**: Give the cluster about **2 minutes** after the script finishes for all nodes to join and become **UN**.
+⏱️ **Note**: Give the cluster about **2 minutes** after the script finishes for all nodes to join and become **UN**.
 
 ## Step 5: ✅ Verify the Cluster
 
-> **Nodetool (from seed):**
+**Nodetool (from seed):**
 
 ```bash
 ./scripts/nodetool.sh status
 ```
 
-> ✅ **Expected**: all three nodes in state **UN** (Up, Normal).
+✅ **Expected**: all three nodes in state **UN** (Up, Normal).
 
-> **CQL shell:**
+**CQL shell:**
 
 ```bash
 ./scripts/cqlsh.sh
 ```
 
-> **In cqlsh:**
+**In cqlsh:**
 
 ```cql
 DESCRIBE CLUSTER;
@@ -112,7 +112,7 @@ So later modules have something to backup and repair:
 ./scripts/cqlsh.sh -f training/labs/sample-keyspace.cql
 ```
 
-> 💡 **Alternative**: Run the same statements inline with `./scripts/cqlsh.sh -e "..."` (see the CQL file for the full script).
+💡 **Alternative**: Run the same statements inline with `./scripts/cqlsh.sh -e "..."` (see the CQL file for the full script).
 
 ## 📁 Important paths and files in the container
 
@@ -130,30 +130,30 @@ Inside each DSE container (e.g. after `./scripts/shell.sh` or `./scripts/shell.s
 | | `/var/lib/cassandra/saved_caches/` | Saved row/key caches. |
 | | `/var/lib/cassandra/hints/` | Hinted handoff hints (for down replicas). |
 
-> 💡 Use these when viewing logs ([05 – Monitoring](05-monitoring.md), [08 – Troubleshooting](08-troubleshooting.md)), taking snapshots or restoring ([06 – Backup & Restore](06-backup-restore.md)), or tuning config.
+💡 Use these when viewing logs ([05 – Monitoring](05-monitoring.md), [08 – Troubleshooting](08-troubleshooting.md)), taking snapshots or restoring ([06 – Backup & Restore](06-backup-restore.md)), or tuning config.
 
 ### ⚙️ Custom Configuration Files
 
 The Docker Compose setup includes a volume mapping (`./config:/config`) that allows you to provide custom configuration files. The DSE Docker image's startup script automatically swaps files from `/config` with the default configuration files:
 
-> **Configuration locations:**
-> - Place `cassandra.yaml` in `./config/cassandra/conf/cassandra.yaml` to override the default Cassandra configuration
-> - Place `dse.yaml` in `./config/dse/conf/dse.yaml` to override the default DSE configuration
-> - Place `jvm.options` in `./config/cassandra/conf/jvm.options` to override JVM settings
+**Configuration locations:**
+- Place `cassandra.yaml` in `./config/cassandra/conf/cassandra.yaml` to override the default Cassandra configuration
+- Place `dse.yaml` in `./config/dse/conf/dse.yaml` to override the default DSE configuration
+- Place `jvm.options` in `./config/cassandra/conf/jvm.options` to override JVM settings
 
-> **Example**: To enable incremental backups, create `config/cassandra/conf/cassandra.yaml` with:
+**Example**: To enable incremental backups, create `config/cassandra/conf/cassandra.yaml` with:
 
 ```yaml
 incremental_backup: true
 ```
 
-> ⚙️ The startup script will merge or replace the default config with your custom file. After adding or modifying config files, restart the containers for changes to take effect:
+⚙️ The startup script will merge or replace the default config with your custom file. After adding or modifying config files, restart the containers for changes to take effect:
 
 ```bash
 docker-compose restart dse-seed dse-node-1 dse-node-2
 ```
 
-> 💡 **Note**: The `config/` directory is gitignored, so your custom configurations won't be committed to the repository.
+💡 **Note**: The `config/` directory is gitignored, so your custom configurations won't be committed to the repository.
 
 ## 🛑 Stopping the Environment
 
@@ -166,10 +166,10 @@ docker-compose down
 
 ## 🐛 Troubleshooting
 
-> ⚠️ **Common issues:**
-> - **Seed never becomes UN**: Check logs with `docker-compose logs dse-seed` (Or: `docker compose logs dse-seed`). Ensure enough memory (e.g. 4 GB).
-> - **Port 9042 in use**: Change port mappings in `docker-compose.yml` or stop the process using the port.
-> - **Nodes not joining**: Ensure `SEEDS` points to the seed service name (`dse-seed`) and wait 2–3 minutes; run `nodetool status` again.
+⚠️ **Common issues:**
+- **Seed never becomes UN**: Check logs with `docker-compose logs dse-seed` (Or: `docker compose logs dse-seed`). Ensure enough memory (e.g. 4 GB).
+- **Port 9042 in use**: Change port mappings in `docker-compose.yml` or stop the process using the port.
+- **Nodes not joining**: Ensure `SEEDS` points to the seed service name (`dse-seed`) and wait 2–3 minutes; run `nodetool status` again.
 
 ## 🚀 Next
 
